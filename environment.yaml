@@ -1,0 +1,22 @@
+name: '522_group1'
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.11,<3.13
+  - pandas
+  - numpy
+  - seaborn
+  - pip
+  - ipykernel
+  - nb_conda_kernels
+  - altair-all
+  - vega_datasets
+  - scipy
+  - matplotlib>=3.2.2
+  - scikit-learn
+  - xgboost
+  - pip:
+    - mglearn
+    - spacymoji
+    - altair_ally>=0.1.1
