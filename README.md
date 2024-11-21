@@ -28,13 +28,15 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 1. Clone this repository:  
    ```bash
    git clone git@github.com:UBC-MDS/wine_quality_predictor_group1.git
-   cd <repository-folder>
 
-2. Ensure all dependencies are installed (see below).
+2. Create the environment. In the root of the repository run:
+   ```bash 
+   conda env create --file environment.yaml
 
-3. Open the analysis notebook or script, e.g., analysis.ipynb.
+3. Ensure all dependencies are installed (see below).
 
-4. Run the Jupyter Notebook in your preferred environment.
+4. Open the analysis notebook or script, e.g., analysis.ipynb.
+
 
 Outputs, such as model performance metrics and visualizations, will be displayed or saved to the output/ directory.
 
