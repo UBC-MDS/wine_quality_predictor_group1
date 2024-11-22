@@ -16,6 +16,7 @@ dependencies:
   - matplotlib>=3.2.2
   - scikit-learn
   - xgboost
+  - conda-lock
   - pip:
     - mglearn
     - spacymoji
