@@ -1,0 +1,12 @@
+services:
+  jupyter-lab:
+    image: tsingh98/wine_quality_predictor_group1:6ce5fe8
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/home/jovyan
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+    platform: linux/amd64
