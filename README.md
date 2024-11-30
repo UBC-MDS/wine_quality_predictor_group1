@@ -25,14 +25,15 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 
 ---
 ## Running the Analysis file with the Docker Container
-1. Clone repository - (https://github.com/UBC-MDS/wine_quality_predictor_group1)
-2. In your terminal use `cd wine_quality_predictor_group1` to switch to the newly created repository
-3. When with your terminal is in the new repository, run the command `docker-compose up`. 
+1. Clone repository - (https://github.com/UBC-MDS/wine_quality_predictor_group1).
+2. Open Docker Hub and ensure the Docker Hub application is open and logged in with the correct credentials.
+3. In your terminal use `cd wine_quality_predictor_group1` to switch to the newly created repository.
+4. When with your terminal is in the new repository, run the command `docker-compose up`. 
     - The first time you will need to pull the image which may take a few minutes to load. 
-4. Once the image loads, on your terminal click the link which starts with http://127.0.0.1, it will contain your token information for the Docker Container
+5. Once the image loads, on your terminal click the link which starts with http://127.0.0.1, it will contain your token information for the Docker Container
     - Make sure you have no other instances of Jupyter Lab is opened on port 8888, as clicking this link will open a Jupyter Lab on this port.
-5. You are able to access the files from this project, to locate the working project file 'notebooks/wine_predictor_analysis_report', and run cells as needed. Outputs, such as model performance metrics and visualizations, will be displayed or saved to the output/ directory.
-6. After closing the container, run the command `docker-compose rm` to clean up the container.
+6. You are able to access the files from this project, to locate the working project file 'notebooks/wine_predictor_analysis_report', and run cells as needed. Outputs, such as model performance metrics and visualizations, will be displayed or saved to the output/ directory.
+7. After closing the container, run the command `docker-compose rm` to clean up the container.
 
 
 <!-- ## How to Run the Data Analysis
