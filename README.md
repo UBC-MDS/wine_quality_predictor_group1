@@ -56,4 +56,4 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.
 
 ## License
-This project is licensed under the terms described in the LICENSE.md file.
+This project is licensed under the terms described in the LICENSE.md file, under MIT License and Creative Commons License. 
