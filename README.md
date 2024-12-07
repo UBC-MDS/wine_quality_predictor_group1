@@ -52,7 +52,22 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 4. Open the analysis notebook or script, e.g., analysis.ipynb. -->
 
 
+## Scripts
+1. Download Data
+This script downloads or reads data and saves it locally.
+```bash
+python scripts/download_data.py data/winequality_red.csv data/raw_data.csv
+```
+- <INPUT_PATH>: URL or local path to the input CSV file (e.g., data/winequality_red.csv).
+- <OUTPUT_PATH>: Path to save the downloaded data (e.g., data/raw_data.csv).
 
+2. Clean Data
+This script cleans the dataset by removing duplicates and handling missing values.
+```bash
+python scripts/clean_data.py data/raw_data.csv data/cleaned_data.csv
+```
+- <INPUT_PATH>: Path to the raw data file (e.g., data/raw_data.csv).
+- <OUTPUT_PATH>: Path to save the cleaned data (e.g., data/cleaned_data.csv).
 
 ## Dependencies
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.
