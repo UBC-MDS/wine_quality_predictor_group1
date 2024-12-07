@@ -69,6 +69,13 @@ python scripts/clean_data.py data/raw_data.csv data/cleaned_data.csv
 - <INPUT_PATH>: Path to the raw data file (e.g., data/raw_data.csv).
 - <OUTPUT_PATH>: Path to save the cleaned data (e.g., data/cleaned_data.csv).
 
+3. Data Validation
+This script validates the data against the predefined schema.
+```bash
+python scripts/data_validation_script.py data/cleaned_data.csv
+```
+- <INPUT_PATH>: Path to the cleaned data (e.g., data/cleaned_data.csv).
+
 ## Dependencies
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.
 

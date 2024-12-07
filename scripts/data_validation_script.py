@@ -27,16 +27,26 @@ schema = pa.DataFrameSchema(
 )
 
 @click.command()
-@click.command("--input_path", type=str, help="Path to import data.")
+@click.argument("input_path", type=click.Path(exists=True), nargs=1)
 def main(input_path):
+    """
+    Validates the input CSV file against the predefined schema.
+    
+    INPUT_PATH: Path to the CSV file to validate.
+    """
     try:
-        df = pd.read_csv('input_path')
+        df = pd.read_csv(input_path)
         schema.validate(df)
-        print("Dataset is valid.")
+        print("Dataset validation passed successfully.")
+    # if validation throws an error
     except pa.errors.SchemaError as e:
-        print("Schema validation failed:", e)
+        print("Schema validation failed:")
+        print(e)
+    # if file import throws an error
     except FileNotFoundError:
         print("Dataset file not found. Please check the file path.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     main()
