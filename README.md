@@ -38,64 +38,57 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 7. After closing the container, run the command `docker-compose rm` to clean up the container.
 
 
-<!-- ## How to Run the Data Analysis
-1. Clone this repository:  
-   ```bash
-   git clone git@github.com:UBC-MDS/wine_quality_predictor_group1.git
+## Scripts
+### 1. Download Data
+This script downloads or reads data stored in a `.zip` file and saves it locally.
+```bash
+python scripts/download_data.py https://archive.ics.uci.edu/static/public/186/wine+quality.zip data/raw/raw_data.csv
+```
+- <url>: URL from internet to download `.zip` file (E.g. https://archive.ics.uci.edu/static/public/186/wine+quality.zip).
+- <write_to>: Path to save the downloaded data (E.g. data/raw/raw_data.csv).
 
-2. Create the environment. In the root of the repository run:
-   ```bash 
-   conda env create --file environment.yaml
+### 2. Clean Data
+This script cleans the dataset by removing duplicates and handling missing values.
+```bash
+python scripts/clean_data.py data/raw/raw_data.csv data/processed/cleaned_data.csv
+```
+- <input_path>: Path to the raw data file (e.g., data/raw/raw_data.csv).
+- <output_path>: Path to save the cleaned data (e.g., data/processed/cleaned_data.csv).
 
-3. Ensure all dependencies are installed (see below).
+### 3. Data Validation
+This script validates the data against the predefined schema.
+```bash
+python scripts/data_validation_script.py data/processed/cleaned_data.csv
+```
+- <input_path>: Path to the cleaned data (e.g., data/processed/cleaned_data.csv).
 
-4. Open the analysis notebook or script, e.g., analysis.ipynb. -->
-
-## Accessing Train Test Split
-Using the previously created 'cleaned_data_path' the dataframe is pulled and train test split is applied.
-4 csv files are created in a new 'train_test_path' which will require a separate export titled:
+4. Data Splitting and Exploratory Data Analysis (EDA)
+This script gets the cleaned data and applies train-test split.
+4 csv files are created in a new `train_test_path`:
  - **X_train.csv**
  - **X_test.csv**
  - **y_train.csv**
  - **y_test.csv**
 
-## Accessing EDA data 
-The EDA plots are saved as individual png. files. Charts should appear in the order below:
-1. target_distribution_plot.png
-2. correlation_heatmap.png
-3. feature_distributions.png
-4. feature_pairplots.png
-
-
-## Scripts
-1. Download Data
-This script downloads or reads data and saves it locally.
+The EDA plots are saved as individual `.png` files. Charts should appear in the order below:
+* `target_distribution_plot.png`
+* `correlation_heatmap.png`
+* `feature_distributions.png`
+* `feature_pairplots.png`
 ```bash
-python scripts/download_data.py data/winequality_red.csv data/raw_data.csv
+python scripts/split_eda.py 
 ```
-- <INPUT_PATH>: URL or local path to the input CSV file (e.g., data/winequality_red.csv).
-- <OUTPUT_PATH>: Path to save the downloaded data (e.g., data/raw_data.csv).
 
-2. Clean Data
-This script cleans the dataset by removing duplicates and handling missing values.
-```bash
-python scripts/clean_data.py data/raw_data.csv data/cleaned_data.csv
-```
-- <INPUT_PATH>: Path to the raw data file (e.g., data/raw_data.csv).
-- <OUTPUT_PATH>: Path to save the cleaned data (e.g., data/cleaned_data.csv).
+5. Model Selection
+This script performs 5-fold cross validation on different models 
 
-3. Data Validation
-This script validates the data against the predefined schema.
-```bash
-python scripts/data_validation_script.py data/cleaned_data.csv
-```
-- <INPUT_PATH>: Path to the cleaned data (e.g., data/cleaned_data.csv).
-
-4. Model Tuning
+6. Model Tuning
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
 ```bash
 python scripts/tuning_script.py model_path, best_model_path, x_train_path, y_train_path, x_test_path, y_test_path
 ```
+7. Model Evaluation
+
 
 ## Dependencies
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.
