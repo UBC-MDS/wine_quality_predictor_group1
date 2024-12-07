@@ -51,6 +51,21 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 
 4. Open the analysis notebook or script, e.g., analysis.ipynb. -->
 
+## Accessing Train Test Split
+Using the previously created 'cleaned_data_path' the dataframe is pulled and train test split is applied.
+4 csv files are created in a new 'train_test_path' which will require a separate export titled:
+ - **X_train.csv**
+ - **X_test.csv**
+ - **y_train.csv**
+ - **y_test.csv**
+
+## Accessing EDA data 
+The EDA plots are saved as individual png. files. Charts should appear in the order below:
+1. target_distribution_plot.png
+2. correlation_heatmap.png
+3. feature_distributions.png
+4. feature_pairplots.png
+
 
 ## Scripts
 1. Download Data
