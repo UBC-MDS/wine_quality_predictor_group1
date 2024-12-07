@@ -1,4 +1,4 @@
-import pandas as py
+import pandas as pd
 import numpy as np
 import click
 import pickle
@@ -7,10 +7,10 @@ from sklearn.metrics import multilabel_confusion_matrix, ConfusionMatrixDisplay
 
 
 @click.command()
-@click.command("--tuned_model_path", type=str, help="Path to access tuned model.")
-@click.command("--preprocessor_path", type=str, help="Path to access preprocessor.")
-@click.command("--test_accuracy_path", type=str, help="Path to save the test accuracy score.")
-@click.command("--figures_path", type=str, help="Path to save any figures from results.")
+@click.option("--tuned_model_path", type=str, help="Path to access tuned model.")
+@click.option("--preprocessor_path", type=str, help="Path to access preprocessor.")
+@click.option("--test_accuracy_path", type=str, help="Path to save the test accuracy score.")
+@click.option("--figures_path", type=str, help="Path to save any figures from results.")
 def main(tuned_model_path, preprocessor_path, test_accuracy_path, figures_path):
     with open(tuned_model_path + "tuned_model.pickle", 'rb') as f:
         best_model = pickle.load(f)
