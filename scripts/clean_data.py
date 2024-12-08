@@ -8,27 +8,46 @@ import os
 @click.command()
 @click.argument('input_path', type=str)
 @click.argument('output_path', type=str)
-def main(input_path, output_path):
+@click.option('--log_path', type=str, help="Path to directory where the logs will be saved")
+def main(input_path, output_path, log_path):
     """
-    Cleans data from a local relative path and saves the cleaned output.
+    Cleans data from a local relative path, saves the cleaned output, and logs details.
     
     INPUT:
     input_path: Relative path to the raw data file
     output_path: Relative path to save the cleaned data file
+    log_path: Directory path to save the logs as CSV files
     """
     try:
         # Load the dataset
         df = pd.read_csv(input_path, sep=';')
-        print("Initial data loaded. Overview:")
-        print(df.info())
+
+        # Prepare the log directory
+        os.makedirs(log_path, exist_ok=True)
+
+        # Save dataset overview
+        overview_file = os.path.join(log_path, "dataset_overview.csv")
+        df_info = pd.DataFrame({"Column": df.columns, "Non-Null Count": df.count(), "Dtype": df.dtypes})
+        df_info.to_csv(overview_file, index=False)
+        print(f"Dataset overview saved to {overview_file}.")
 
         # Handle missing values
-        missing_values = df.isnull().sum()
-        print(f"Missing values:\n{missing_values}")
+        missing_values = df.isnull().sum().reset_index()
+        missing_values.columns = ["Column", "Missing Values"]
+        missing_file = os.path.join(log_path, "missing_values.csv")
+        missing_values.to_csv(missing_file, index=False)
+        print(f"Missing values report saved to {missing_file}.")
 
         # Remove duplicates
-        duplicates = df[df.duplicated()]
-        print(f"Number of duplicates: {len(duplicates)}")
+        duplicates = df[df.duplicated()].reset_index(drop=True)
+        duplicates_file = os.path.join(log_path, "duplicates.csv")
+        if not duplicates.empty:
+            duplicates.to_csv(duplicates_file, index=False)
+        else:
+            pd.DataFrame().to_csv(duplicates_file, index=False)  # Save empty DataFrame if no duplicates
+        print(f"Duplicates report saved to {duplicates_file}.")
+
+        # Drop duplicates
         df = df.drop_duplicates()
 
         # Save the cleaned data
