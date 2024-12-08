@@ -80,12 +80,13 @@ The EDA plots are saved as individual `.png` files. Charts should appear in the 
 * `feature_distributions.png`
 * `feature_pairplots.png`
 ```bash
-python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --train_test_path=data/processed/ --figures_path=results/figures/
+python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --train_test_path=data/processed/ --figures_path=results/figures/ --tables_path=results/tables/
 ```
 
 - <clean_data_path>: Path to the cleaned data (E.g. clean_data_path=data/processed/cleaned_data.csv)
 - <train_test_path>: Path to save the train-test splits of the data set. (E.g. data/processed/)
 - <figures_path>: Path to save the figures generated from EDA. (E.g. results/figures/)
+- <tables_path>: Path to save the tables generated from EDA. (E.g. results/tables/)
 
 ### 5. Preprocessing and Model Selection
 This script creates a preprocessor, and performs 5-fold cross validation on different models. 
