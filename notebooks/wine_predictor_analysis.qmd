@@ -69,7 +69,14 @@ df = pd.read_csv('../data/winequality_red.csv', sep = ';')
 df.head()
 ```
 
-_Table 1: Preview of wine dataset to the used in analysis_
+@tbl-wine-dataset-preview provides a preview of the wine dataset used in the analysis.
+
+```{python}
+#| label: tbl-wine-dataset-preview
+#| tbl-cap: "Preview of wine dataset to be used in analysis."
+df.head()
+```
+
 
 ### Data Cleaning and Duplicates Handling
 
@@ -91,6 +98,17 @@ print(duplicates)
 
 ```{python}
 df = df.drop_duplicates()
+```
+@tbl-data-cleaning-summary summarizes the data cleaning steps undertaken.
+
+```{python}
+#| label: tbl-data-cleaning-summary
+#| tbl-cap: "Summary of Data Cleaning Steps."
+cleaning_summary = pd.DataFrame({
+    "Step": ["Initial Missing Values", "Removed Duplicates"],
+    "Count": [0, len(duplicates)]
+})
+cleaning_summary
 ```
 
 ### Columns
@@ -391,17 +409,4 @@ This study raises several avenues for future exploration:
 <br>
 
 ## References
-
-Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J. (2009). Modeling wine preferences by data mining from physicochemical properties. Decision Support Systems, 47(4), 547-553. Retrieved from http://www3.dsi.uminho.pt/pcortez/wine/
-
-UCI Machine Learning Repository. (n.d.). Wine quality dataset. Retrieved from https://archive.ics.uci.edu/dataset/186/wine+quality
-
-Cortez, P., & Cerdeira, A. (2009). Modeling wine preferences by data mining from physicochemical properties. Retrieved from https://www.semanticscholar.org/paper/Modeling-wine-preferences-by-data-mining-from-Cortez-Cerdeira/bf15a0ccc14ac1deb5cea570c870389c16be019c
-
-Jupyter Project. (n.d.). Working with Markdown cells. In Jupyter Notebook documentation. Retrieved November 23, 2024, from https://jupyter-notebook.readthedocs.io/en/stable/examples/Notebook/Working%20With%20Markdown%20Cells.html
-
-Scikit-learn Developers. (n.d.). sklearn.metrics.multilabel_confusion_matrix. In Scikit-learn documentation. Retrieved November 23, 2024, from https://scikit-learn.org/dev/modules/generated/sklearn.metrics.multilabel_confusion_matrix.html
-
-Török, D.F.,(2023). Machine Learning for Predicting Wine Quality and its Key Determinants Based on Physicochemical Properties SSRAML, 6(11), 1–21.
-
 
