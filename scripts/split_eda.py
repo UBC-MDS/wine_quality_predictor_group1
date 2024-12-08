@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import click
 import os
-import pickle
 
 
 @click.command()
