@@ -42,25 +42,28 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 ### 1. Download Data
 This script downloads or reads data stored in a `.zip` file and saves it locally.
 ```bash
-python scripts/download_data.py https://archive.ics.uci.edu/static/public/186/wine+quality.zip data/raw/raw_data.csv
+python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/186/wine+quality.zip --write_to=data/raw/
 ```
 - <url>: URL from internet to download `.zip` file (E.g. https://archive.ics.uci.edu/static/public/186/wine+quality.zip).
-- <write_to>: Path to save the downloaded data (E.g. data/raw/raw_data.csv).
+- <write_to>: Path to save the downloaded data (E.g. data/raw).
+
 
 ### 2. Clean Data
 This script cleans the dataset by removing duplicates and handling missing values.
 ```bash
-python scripts/clean_data.py data/raw/raw_data.csv data/processed/cleaned_data.csv
+python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv
 ```
 - <input_path>: Path to the raw data file (e.g., data/raw/raw_data.csv).
 - <output_path>: Path to save the cleaned data (e.g., data/processed/cleaned_data.csv).
 
+
 ### 3. Data Validation
 This script validates the data against the predefined schema.
 ```bash
-python scripts/data_validation_script.py data/processed/cleaned_data.csv
+python scripts/data_validation_script.py --input_path=data/processed/cleaned_data.csv
 ```
 - <input_path>: Path to the cleaned data (e.g., data/processed/cleaned_data.csv).
+
 
 4. Data Splitting and Exploratory Data Analysis (EDA)
 This script gets the cleaned data and applies train-test split.
@@ -76,7 +79,7 @@ The EDA plots are saved as individual `.png` files. Charts should appear in the 
 * `feature_distributions.png`
 * `feature_pairplots.png`
 ```bash
-python scripts/split_eda.py 
+python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --train_test_path=data/processed/ --figures_path=results/figures/
 ```
 
 5. Model Selection
