@@ -16,7 +16,29 @@ import pickle
 @click.option("--train_test_path", type=str, help="Path to store and access data splits.")
 @click.option("--figures_path", type=str, help="Path to save figures generated.")
 def main(clean_data_path, train_test_path, figures_path) :
+"""
+The main function for reading csv from path, performing train test split to create our training and testing 
+and creating our EDA visualizations.
 
+This function performs the following steps:
+1. Reads the cleaned data from the provided `clean_data_path` as a CSV file.
+2. Splits the data into features (X) and target (y), then performs a train-test split.
+3. Saves the train and test splits (X_train, y_train, X_test, y_test) as CSV files to the specified `train_test_path`.
+4. Generates a descriptive statistics plot for the training set features (X_train) and saves it as an image in the specified `figures_path`.
+5. Creates and saves a distribution plot of the target variable (`y_train`), as well as a heatmap showing correlations between features.
+6. Generates and saves Kernel Density Estimate (KDE) plots for feature distributions, and creates a pairplot of all features.
+
+Parameters:
+clean_data_path (str): The file path for the cleaned data CSV file.
+train_test_path (str): The directory path where the train-test split CSV files should be saved.
+figures_path (str): The directory path where the generated figures (plots) should be saved.
+
+Returns:
+None: The function performs data processing, saves CSV files, and generates visualizations.
+
+Error Handling:
+The function includes error handling for each major step, printing a message if any operation fails.
+"""
     # importing the data from previous path for clean data
     try:
         df = pd.read_csv(clean_data_path)
