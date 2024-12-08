@@ -232,7 +232,7 @@ From these results, it appeared that the `{python} model-selection-scores["test_
 
 #### Hyperparameter Tuning
 
-After performing `RandomizedSearchCV` on the `{python} model-selection-scores["test_score"].idxmax()` model, the best parameters for the model is as follows: 
+After performing `RandomizedSearchCV` on the `{python} model-selection-scores["test_score"].idxmax()` model, the best parameters for the model is as follows in @tbl-best_parameters: 
 
 ```{python}
 #| label: tbl-best_parameters
