@@ -75,16 +75,17 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
         # Target Distribution Plot
         plt.figure(figsize=(8,4))
         sns.countplot(x=y_train)
-        plt.title(f"Figure 1 - Distribution of Target Class in the Data Set")
+        plt.title(f"Distribution of Target Class in the Data Set")
         plt.savefig(f"{figures_path}target_distribution_plot.png", format="png", dpi=300)
         print('Target distribution plot saved.')
 
         # Correlation Heatmap
-        plt.figure(figsize=(8, 6)) 
+        plt.figure(figsize=(7, 5)) 
         correlation_matrix = X_train.corr(method='pearson')
         sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap="Blues", cbar=True, 
                 annot_kws={'size': 10, 'color': 'black'}, linewidths=0.6)
-        plt.title(f"Figure 2 - Wine Quality Features Heatmap - Pearson Correlation")
+        plt.title(f"Wine Quality Features Heatmap - Pearson Correlation")
+        plt.tight_layout()
         plt.savefig(f"{figures_path}correlation_heatmap.png", format = "png", dpi=300)
         print('Correlation heatmap saved.')
 
@@ -95,7 +96,7 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
         # loop to create feature distribution plots
         for i, column in enumerate(X_train.columns):
             sns.kdeplot(df[column], ax=axes[i], fill=True)
-            axes[i].set_title(f"Figure {i+3}: KDE for {column}")
+            axes[i].set_title(f"KDE for {column}")
             axes[i].set_xlabel("Value")
             axes[i].set_ylabel("Density")
         plt.tight_layout()
@@ -105,7 +106,7 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
         # Pairplot for all features
         plt.figure(figsize=(8,4))
         feature_pairplot = sns.pairplot(X_train, kind = 'reg', diag_kind = 'hist')
-        feature_pairplot.fig.suptitle('Figure 15: Regression Pairplot for All Features', size = 30)
+        feature_pairplot.fig.suptitle('Regression Pairplot for All Features', size = 30)
         feature_pairplot.fig.subplots_adjust(top = 0.94)
         plt.savefig(f"{figures_path}feature_pairplots.png", format = "png", dpi=300)
         print("Feature Pairplot saved.")

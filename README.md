@@ -102,7 +102,7 @@ python scripts/preprocess_model_selection.py --train_data_path=data/processed/ -
 ### 6. Model Tuning
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
 ```bash
-python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv results/models/best_params.csv
+python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv results/tables/best_params.csv
 ```
 - <model_path>: Path to the retrieve pre-trained model file (.pickle).
 - <best_model_path>: Path to save the fine-tuned model (.picke).
@@ -125,6 +125,13 @@ python scripts/model_evaluation.py --tuned_model_path=results/models/best_model.
 
 ### 8. Report Generation
 
+Finally, to generate the report in both `.html` and `.pdf` formats, do the following commands:
+
+```bash
+quarto render report/wine_predictor_analysis_report.qmd --to html
+quarto render report/wine_predictor_analysis_report.qmd --to pdf
+```
+These generated reports can be found in the `reports` folder.
 
 ## Dependencies
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.

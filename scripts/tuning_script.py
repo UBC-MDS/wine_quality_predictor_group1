@@ -59,8 +59,7 @@ def main(model_path, best_model_path, x_train_path, y_train_path, x_test_path, y
     best_params = random_search.best_params_
     best_score = random_search.best_score_
 
-    print(f"Best hyperparameters: {best_params}")
-    print(f"Best cross-validation score: {best_score}")
+    print("Finished Random Search")
 
     # Save the best model pipeline
     with open(best_model_path, "wb") as f:
