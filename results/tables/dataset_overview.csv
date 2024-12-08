@@ -1,0 +1,13 @@
+Column,Non-Null Count,Dtype
+fixed acidity,1599,float64
+volatile acidity,1599,float64
+citric acid,1599,float64
+residual sugar,1599,float64
+chlorides,1599,float64
+free sulfur dioxide,1599,float64
+total sulfur dioxide,1599,float64
+density,1599,float64
+pH,1599,float64
+sulphates,1599,float64
+alcohol,1599,float64
+quality,1599,int64
