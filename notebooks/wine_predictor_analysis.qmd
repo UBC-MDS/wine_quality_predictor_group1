@@ -118,37 +118,14 @@ cleaning_summary
 
 ### Data Validation
 
-```{python}
-# With reference to: 
-# Machine Learning for Predicting Wine Quality and its Key Determinants Based on Physicochemical Properties SSRAML, 6(11), 1–21.
+The dataset has been validated against the following criteria:
 
-schema = pa.DataFrameSchema(
-    {
-        "fixed acidity": pa.Column(float, pa.Check(lambda s: (s > 0).all()), nullable=False),
-        "volatile acidity": pa.Column(float, pa.Check(lambda s: (s > 0).all()), nullable=False),
-        "citric acid": pa.Column(float, pa.Check(lambda s: (s >= 0).all()), nullable=False),
-        "residual sugar": pa.Column(float, pa.Check(lambda s: (s >= 0).all()), nullable=False),
-        "chlorides": pa.Column(float, pa.Check(lambda s: (s >= 0).all()), nullable=False),
-        "free sulfur dioxide": pa.Column(float, pa.Check(lambda s: (s >= 0).all()), nullable=False),
-        "total sulfur dioxide": pa.Column(float, pa.Check(lambda s: (s >= 0).all()), nullable=False),
-        "density": pa.Column(float, pa.Check(lambda s: ((s >= 0.9) & (s <= 1.1)).all()), nullable=False),
-        "pH": pa.Column(float, pa.Check(lambda s: ((s >= 0) & (s <= 14)).all()), nullable=False),
-        "sulphates": pa.Column(float, pa.Check(lambda s: (s >= 0).all()), nullable=False),
-        "alcohol": pa.Column(float, pa.Check(lambda s: ((s >= 5) & (s <= 20)).all()), nullable=False),
-        "quality": pa.Column(int, pa.Check.isin(range(0, 11)), nullable=False),
-    },
-    checks=[
-        # Check for duplicate rows at the DataFrame level
-        pa.Check(lambda df: not df.duplicated().any(), error="Duplicate rows found."),
-        # Check for empty rows (rows with all NaN values)
-        pa.Check(lambda df: not (df.isna().all(axis=1)).any(), error="Empty rows found."),
-    ]
-)
-```
+1. **Column Data Types**: All columns conform to the expected data types.
+2. **Value Ranges**: All columns conform to the specified range. 
+3. **Duplicate Rows**: No duplicate rows were found.
+4. **Empty Rows**: No null values or rows with all null values were found.
 
-```{python}
-schema.validate(df, lazy=True)
-```
+The dataset passed all validation checks successfully.
 
 ### Data Splitting
 
@@ -255,29 +232,14 @@ From these results, it appeared that the `{python} model-selection-scores["test_
 
 #### Hyperparameter Tuning
 
+After performing `RandomizedSearchCV` on the `{python} model-selection-scores["test_score"].idxmax()` model, the best parameters for the model is as follows: 
+
 ```{python}
-# Hyperparameter tuning for the best performing model
-param_dist = {
-    'svc__C': loguniform(1e-3, 1e3),
-    'svc__gamma': loguniform(1e-3, 1e3),
-    'svc__decision_function_shape': ['ovr', 'ovo'],
-    'svc__class_weight': [None, 'balanced']
-}
-
-svc_tuning = make_pipeline(preprocessor, SVC())
-
-random_search = RandomizedSearchCV(svc_tuning, param_dist, 
-                                   n_iter=50, cv=5, n_jobs=-1)
-
-random_search.fit(X_train, y_train)
-
-best_params = random_search.best_params_
-best_score = random_search.best_score_
-
-print(f"Best hyperparameters: {best_params}")
-print(f"Best cross-validation score: {best_score}")
+#| label: tbl-best_parameters
+#| tbl-cap: Best parameters for the SVC model along with the best score.
+tuning_score = pd.read_csv("../results/tables/best_params.csv")
+Markdown(tuning_score.to_markdown(index = False))
 ```
-
 
 #### Model Evaluation
 ```{python}
