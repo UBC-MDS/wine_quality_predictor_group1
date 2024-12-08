@@ -1,3 +1,6 @@
+# Author: Wangkai Zhu
+# Date: 2024-12-07
+
 import pandera as pa
 import pandas as pd
 import click
@@ -32,7 +35,7 @@ def main(input_path):
     """
     Validates the input CSV file against the predefined schema.
     
-    INPUT_PATH: Path to the CSV file to validate.
+    input_path: Path to the CSV file to validate.
     """
     try:
         df = pd.read_csv(input_path)

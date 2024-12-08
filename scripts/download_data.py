@@ -1,3 +1,8 @@
+# Adapted from https://github.com/ttimbers/breast_cancer_predictor_py
+# Author: Yixuan Gao
+# Date: 2024-12-07
+
+
 import click
 import requests
 import os
@@ -58,6 +63,9 @@ def extract_specific_file(zip_path, target_file, output_path):
         with zip_ref.open(target_file) as src, open(output_path, 'wb') as dest:
             dest.write(src.read())
 
+@click.command()
+@click.option("--url", type=str, help="URL to download data as zip file from the Internet.")
+@click.option("--write_to", type=str, help="Path to save downloaded zip file.")
 def main(url, write_to):
     """
     Downloads data zip data from the web to a local filepath and extracts it.
@@ -75,6 +83,7 @@ def main(url, write_to):
     """
     temp_zip_path = os.path.join(write_to, "temp.zip")
     target_file = "winequality-red.csv"
+    raw_data_file = "raw_data.csv"
 
     try:
         download_file(url, temp_zip_path)
@@ -83,6 +92,11 @@ def main(url, write_to):
         # Extract the specific file
         extract_specific_file(temp_zip_path, target_file, os.path.join(write_to, target_file))
         print(f"Extracted {target_file} to {write_to}")
+
+        # Rename the extracted file
+        renamed_file_path = os.path.join(write_to, raw_data_file)
+        os.rename(write_to + target_file, renamed_file_path)
+        print(f"Renamed {target_file} to {raw_data_file}")
 
         # Remove the temporary ZIP file
         os.remove(temp_zip_path)
