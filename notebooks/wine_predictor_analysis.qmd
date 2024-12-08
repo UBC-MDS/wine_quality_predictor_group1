@@ -129,80 +129,41 @@ The dataset passed all validation checks successfully.
 
 ### Data Splitting
 
+Our dataset is split into two groups - 80% is split for our training data while the remaining 20% is reserved for our testing set. 
+
 ```{python}
-# Creating our X and Y data
+
 X = df.drop('quality', axis=1) 
 y = df['quality']
 
-# Train test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 ```
 
 ### Exploratory Data Analysis (EDA)
 
 ```{python}
-X_train.describe().T.style.background_gradient(cmap='Blues')
+#| label: tbl-x-train-describe
+#| tbl-cap: Summary of wine data set with count, mean and quartile ranges
+pd.DataFrame(X_train.describe().T)
 ```
 
-_Table 2: Summary of wine data set with highlighted extreme values_
+![Distribution of Target Class in the Data Set](../results/figures/target_distribution_plot.png){{#fig-target-dist width=40%}}
 
-```{python}
-plt.figure(figsize=(8,4))
-sns.countplot(x=y_train)
-plt.title(f"Figure 1 - Distribution of Target Class in the Data Set")
-plt.show()
-```
+It is noted that not all possible target classes @target-dist (from 0 to 10) are present in the training data.
 
-_Figure 1: Distribution of target classes in the data set_
+For our Exploratory Data Analysis we wanted to see if our features have a linear correlation with each other. The below plot is a heatmap which shows the pearson correlation for each feature. 
 
-It is noted that not all possible target classes (from 0 to 10) are present in the training data.
+![Wine Quality Features Heatmap - Pearson Correlation](../results/figures/correlation_heatmap.png){{#fig-correlation_heatmap width=55%}}
 
-For our Exploratory Data Analysis we wanted to see if our features have a linear correlation with each other and the target. The below plot is a heatmap which shows the pearson correlation. 
+It would appear at first glance that there are a few features which seem to have a moderate linear correlation with each other. Some notable connections we can make from @fig-correlation_heatmap is between pH levels and fixed acidity which appears to have a negative correlation. Density and fixed acidity on the other hand appears to have a positive correlation, with fixed acidity being a common feature between both examples. 
 
-```{python}
-plt.figure(figsize=(10, 8)) 
-correlation_matrix = X_train.corr(method='pearson')
-sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap="Blues", cbar=True, 
-            annot_kws={'size': 10, 'color': 'black'}, linewidths=0.6)
+![KDE Plots for all features](../results/figures/feature_distributions.png){{#fig-feature_distributions width=30%}}
 
-plt.title(f"Figure 2 - Wine Quality Features Heatmap - Pearson Correlation")
-plt.show()
-```
+The KDE Plot shows that while some of our features are normally distributed, not all of them are. There are a few features which are skewed to the right such as alcohol and sulphates. There are other features in @fig-correlation_heatmap which have multiple peaks such as volatile acidity and citric acid.
 
-_Figure 2 - Wine Quality Features Heatmap using Pearson Correlation"_
+![KDE Plots for all featuresRegression Pairplot for All Features](../results/figures/feature_pairplots.png){{#fig-feature_pairplots width=15%}}
 
-_Note that quality has the strongest r-square correlation with alchohol levels at 0.48, meaning alcohol levels is the feature with the highest linear relationship to the target, with sulphates having the second highest at 0.25._
-
-```{python}
-num_features = len(X_train.columns)
-fig, axes = plt.subplots(nrows=num_features, ncols=1, figsize=(10, 2*num_features))
-
-# Iterate over each feature and plot in a subplot
-for i, column in enumerate(X_train.columns):
-    sns.kdeplot(df[column], ax=axes[i], fill=True)
-    axes[i].set_title(f"Figure {i+3}: KDE for {column}")
-    axes[i].set_xlabel("Value")
-    axes[i].set_ylabel("Density")
-
-plt.tight_layout()
-plt.show()
-```
-
-_Figures 3-14: KDE plots for all features in data set_
-
-The above is are KDE plots for all our features, so we can gain an understanding of the distribution for our features. Some notes that I have observed is that:
-- It's noted that in our target feature "Quality" it seems that most of our data actually fall in the 5 and 6 range for score. To obtain a score of 8 and above looks to be quite rare and so our final results should be similar where only the strongest scoring wine will get a quality value of 8 and above.
-- There are a few features which are normally distributed but not all of them. Alcohol for an example appears to skew to the right significantly. This means that wine will tend to not fall below a minimum alcohol level however the ceiling for alcohol is not as strict as the floor. Total and Free Sulfur Dioxide seems to have a similar distribution which skews slightly to the right but according to the heatmap above the correlation between Total and Free Sulfur Dioxide and alcohol content is not very strong.
-
-```{python}
-feature_pairplot = sns.pairplot(X_train, kind = 'reg', diag_kind = 'hist')
-feature_pairplot.fig.suptitle('Figure 15: Regression Pairplot for All Features', size = 30)
-feature_pairplot.fig.subplots_adjust(top = 0.94)
-
-feature_pairplot
-```
-
-_Figure 15: Regression Pairplot for All Features_
+Finally @fig-feature_pairplots is a pairplot which shows the actual distribution of the datapoints feature by feature.
 
 ### Analysis
 #### Model Selection
