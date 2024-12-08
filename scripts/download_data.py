@@ -1,29 +1,107 @@
+# Adapted from https://github.com/ttimbers/breast_cancer_predictor_py
+# Author: Yixuan Gao
+# Date: 2024-12-07
+
+
 import click
-import pandas as pd
+import requests
 import os
+import zipfile
+
+def download_file(url, output_path):
+    """
+    Download a file from the given URL and save it to the specified local path.
+
+    Parameters:
+    ----------
+    url : str
+        The URL of the file to download.
+    output_path : str
+        The local path where the file will be saved.
+
+    Returns:
+    -------
+    None
+    """
+    response = requests.get(url, stream=True)
+
+    # Check if the URL exists and is accessible
+    if response.status_code != 200:
+        raise ValueError(f"Failed to fetch data from URL: {url}. HTTP status code: {response.status_code}")
+
+    # Create the directory if it doesn't exist
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # Save the file locally
+    with open(output_path, 'wb') as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
+
+def extract_specific_file(zip_path, target_file, output_path):
+    """
+    Extract a specific file from a ZIP archive.
+
+    Parameters:
+    ----------
+    zip_path : str
+        Path to the ZIP archive.
+    target_file : str
+        The name of the file to extract.
+    output_path : str
+        Path to save the extracted file.
+
+    Returns:
+    -------
+    None
+    """
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        if target_file not in zip_ref.namelist():
+            raise ValueError(f"The target file {target_file} was not found in the ZIP archive.")
+
+        # Extract only the specified file
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        with zip_ref.open(target_file) as src, open(output_path, 'wb') as dest:
+            dest.write(src.read())
 
 @click.command()
-@click.argument('input_path', type=str)
-@click.argument('output_path', type=str)
-def main(input_path, output_path):
+@click.option("--url", type=str, help="URL to download data as zip file from the Internet.")
+@click.option("--write_to", type=str, help="Path to save downloaded zip file.")
+def main(url, write_to):
     """
-    Handles data copying or downloading from a local relative path.
-    
-    INPUT:
-    input_path: Relative local path to the data file
-    output_path: Relative path to save the data file
+    Downloads data zip data from the web to a local filepath and extracts it.
+
+    Parameters:
+    ----------
+    url : str
+        The URL of the zip file to download.
+    write_to : str
+        The directory where the contents of the zip file will be extracted.
+
+    Returns:
+    -------
+    None
     """
+    temp_zip_path = os.path.join(write_to, "temp.zip")
+    target_file = "winequality-red.csv"
+    raw_data_file = "raw_data.csv"
+
     try:
-        if not os.path.exists(input_path):
-            raise FileNotFoundError(f"File {input_path} does not exist.")
+        download_file(url, temp_zip_path)
+        print(f"File successfully downloaded from {url} to {temp_zip_path}")
 
-        # Read and save the file
-        data = pd.read_csv(input_path, sep=';')
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        data.to_csv(output_path, index=False)
-        print(f"Data copied from {input_path} to {output_path}.")
+        # Extract the specific file
+        extract_specific_file(temp_zip_path, target_file, os.path.join(write_to, target_file))
+        print(f"Extracted {target_file} to {write_to}")
+
+        # Rename the extracted file
+        renamed_file_path = os.path.join(write_to, raw_data_file)
+        os.rename(write_to + target_file, renamed_file_path)
+        print(f"Renamed {target_file} to {raw_data_file}")
+
+        # Remove the temporary ZIP file
+        os.remove(temp_zip_path)
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"An error occurred: {e}")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

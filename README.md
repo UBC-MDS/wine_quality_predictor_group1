@@ -38,64 +38,92 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
 7. After closing the container, run the command `docker-compose rm` to clean up the container.
 
 
-<!-- ## How to Run the Data Analysis
-1. Clone this repository:  
-   ```bash
-   git clone git@github.com:UBC-MDS/wine_quality_predictor_group1.git
+## Scripts
+### 1. Download Data
+This script downloads or reads data stored in a `.zip` file and saves it locally.
+```bash
+python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/186/wine+quality.zip --write_to=data/raw/
+```
+- <url>: URL from internet to download `.zip` file (E.g. https://archive.ics.uci.edu/static/public/186/wine+quality.zip).
+- <write_to>: Path to save the downloaded data (E.g. data/raw).
 
-2. Create the environment. In the root of the repository run:
-   ```bash 
-   conda env create --file environment.yaml
 
-3. Ensure all dependencies are installed (see below).
+### 2. Clean Data
+This script cleans the dataset by removing duplicates and handling missing values.
+```bash
+python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv --log_path=results/tables/
+```
+- <input_path>: Path to the raw data file (E.g. data/raw/raw_data.csv).
+- <output_path>: Path to save the cleaned data (E.g. data/processed/cleaned_data.csv).
+- <log-path>: Path to saves results/logs of data cleaning.
 
-4. Open the analysis notebook or script, e.g., analysis.ipynb. -->
 
-## Accessing Train Test Split
-Using the previously created 'cleaned_data_path' the dataframe is pulled and train test split is applied.
-4 csv files are created in a new 'train_test_path' which will require a separate export titled:
+### 3. Data Validation
+This script validates the data against the predefined schema.
+```bash
+python scripts/data_validation_script.py data/processed/cleaned_data.csv
+```
+- <input_path>: Path to the cleaned data (E.g. data/processed/cleaned_data.csv).
+
+
+### 4. Data Splitting and Exploratory Data Analysis (EDA)
+This script gets the cleaned data and applies train-test split.
+4 csv files are created in a new `train_test_path`:
  - **X_train.csv**
  - **X_test.csv**
  - **y_train.csv**
  - **y_test.csv**
 
-## Accessing EDA data 
-The EDA plots are saved as individual png. files. Charts should appear in the order below:
-1. target_distribution_plot.png
-2. correlation_heatmap.png
-3. feature_distributions.png
-4. feature_pairplots.png
-
-
-## Scripts
-1. Download Data
-This script downloads or reads data and saves it locally.
+The EDA plots are saved as individual `.png` files. Charts should appear in the order below:
+* `target_distribution_plot.png`
+* `correlation_heatmap.png`
+* `feature_distributions.png`
+* `feature_pairplots.png`
 ```bash
-python scripts/download_data.py data/winequality_red.csv data/raw_data.csv
+python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --train_test_path=data/processed/ --figures_path=results/figures/ --tables_path=results/tables/
 ```
-- <INPUT_PATH>: URL or local path to the input CSV file (e.g., data/winequality_red.csv).
-- <OUTPUT_PATH>: Path to save the downloaded data (e.g., data/raw_data.csv).
 
-2. Clean Data
-This script cleans the dataset by removing duplicates and handling missing values.
+- <clean_data_path>: Path to the cleaned data (E.g. clean_data_path=data/processed/cleaned_data.csv)
+- <train_test_path>: Path to save the train-test splits of the data set. (E.g. data/processed/)
+- <figures_path>: Path to save the figures generated from EDA. (E.g. results/figures/)
+- <tables_path>: Path to save the tables generated from EDA. (E.g. results/tables/)
+
+### 5. Preprocessing and Model Selection
+This script creates a preprocessor, and performs 5-fold cross validation on different models. 
+The scores from this cross-valiation are saved, as well as the model with the best evaluation score.
 ```bash
-python scripts/clean_data.py data/raw_data.csv data/cleaned_data.csv
+python scripts/preprocess_model_selection.py --train_data_path=data/processed/ --scores_path=results/tables/ --preprocessor_path=results/models/ --model_path=results/models/
 ```
-- <INPUT_PATH>: Path to the raw data file (e.g., data/raw_data.csv).
-- <OUTPUT_PATH>: Path to save the cleaned data (e.g., data/cleaned_data.csv).
+- <train_data_path>: Relative path to retrieve training data.
+- <scores_path>: Relative path to save training and validation scores.
+- <preprocessor_path>: Relative path to save the preprocessor as .pickle file.
+- <model_path>: Relative path to save best performing model as .pickle file.
 
-3. Data Validation
-This script validates the data against the predefined schema.
-```bash
-python scripts/data_validation_script.py data/cleaned_data.csv
-```
-- <INPUT_PATH>: Path to the cleaned data (e.g., data/cleaned_data.csv).
-
-4. Model Tuning
+### 6. Model Tuning
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
 ```bash
-python scripts/tuning_script.py model_path, best_model_path, x_train_path, y_train_path, x_test_path, y_test_path
+python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv
 ```
+- <model_path>: Path to the retrieve pre-trained model file (.pickle).
+- <best_model_path>: Path to save the fine-tuned model (.picke).
+- <X_train_path>: Path to the training features (.CSV).
+- <y_train_path>: Path to the training labels (.CSV).
+- <X_test_path>: Path to the testing features (.CSV).
+- <y_test_path>: Path to the testing labels (.CSV).
+
+### 7. Model Evaluation
+This script finds the accuracy of the model for predictions on the testing set.
+It also creates and saves confusion matrices using the One vs Rest method of scoring.
+```bash
+python scripts/model_evaluation.py --tuned_model_path=results/models/best_model.pickle --test_split_path=data/processed/ --test_accuracy_path=results/tables/ --figures_path=results/figures/
+```
+- <tuned_model_path>: Relative path to the tuned model after hyperparameter tuning.
+- <test_split_path>: Relative path to testing split of the data set.
+- <test_accuracy_path>: Relative path to save test accuracy.
+- <figures_path>: Path to save any figures from evaluation.
+
+### 8. Report Generation
+
 
 ## Dependencies
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.

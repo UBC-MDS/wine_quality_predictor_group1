@@ -1,6 +1,20 @@
+# Author: Timothy Singh
+# Date: 2024-12-07
+
 import pandas as pd
 import click
 import pickle
+import os
+from sklearn.model_selection import cross_validate
+from sklearn.compose import make_column_transformer
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.dummy import DummyClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 
 # Creating function to return accuracy of from each trained model
 def cross_val_scores(model, X_train, y_train):
@@ -39,19 +53,36 @@ def cross_val_scores(model, X_train, y_train):
 
 
 @click.command()
-@click.option("--scores_path", type=str, help="Path to save training and validation scores.")
-@click.option("--preprocessor_path", type=str, help="Path to save the preprocessor as .pkl file.")
-@click.option("--model_path", type=str, help="Path to save best performing model as .pkl file.")
-def main(scores_path, preprocessor_path, model_path):
+@click.option("--train_data_path", type=str, help="Relative path to retrieve training data.")
+@click.option("--scores_path", type=str, help="Relative path to save training and validation scores.")
+@click.option("--preprocessor_path", type=str, help="Relative path to save the preprocessor as .pickle file.")
+@click.option("--model_path", type=str, help="Relative path to save best performing model as .pickle file.")
+def main(train_data_path, scores_path, preprocessor_path, model_path):
+    """
+    Creates preprocessor and pipelines, and evaluates the performance of different models on the training data. 
+    Dumps the model with the best evaluation score as a .pickle file.
+    
+    INPUT:
+    train_data_path: Relative path to retrieve training data.
+    scores_path: Relative path to save training and validation scores.
+    preprocessor_path: Relative path to save the preprocessor as .pickle file.
+    model_path: Relative path to save best performing model as .picklefile.
+    """
+
+    # Ensuring file paths exists
+    os.makedirs(scores_path, exist_ok=True)
+    os.makedirs(preprocessor_path, exist_ok=True)
+    os.makedirs(model_path, exist_ok=True)
 
     # Loading training set
-    # X_train = ...
-    # y_train = ...
+    X_train = pd.read_csv(f"{train_data_path}X_train.csv")
+    y_train = pd.read_csv(f"{train_data_path}y_train.csv")
     
     # Creating Column Transformer
     numeric_features = list(X_train.columns)
     preprocessor = make_column_transformer((StandardScaler(), numeric_features))
-    pickle.dump(preprocessor, open(model_path + "preprocessor.pickle", 'wb')) 
+    pickle.dump(preprocessor, open(f"{preprocessor_path}preprocessor.pickle", 'wb'))
+    print(f"Successfully saved preprocessor to {preprocessor_path}.")
 
     # Creation of model dictionary
     models = {
@@ -80,7 +111,8 @@ def main(scores_path, preprocessor_path, model_path):
     results_df = pd.DataFrame(results).T
 
     # Save results_df to .csv file to scores_path
-    write_csv(results_df, scores_path, "inital_model_scores.csv")
+    results_df.to_csv(os.path.join(scores_path, "inital_model_scores.csv"), index=True)
+    print(f"Successfully saved cross validation results to {scores_path}.")
 
     # Save model pipeline with best validation score to model_path
     model_name = results_df["test_score"].idxmax()
@@ -88,7 +120,8 @@ def main(scores_path, preprocessor_path, model_path):
             preprocessor,
             models[model_name]
         )
-    pickle.dump(model, open(model_path + "base_model.pickle", "wb"))
+    pickle.dump(model, open(f"{model_path}base_model.pickle", "wb"))
+    print(f"Successfully saved {model_name} model to {model_path}.")
 
 if __name__ ==  "__main__":
     main()
