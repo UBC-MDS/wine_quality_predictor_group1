@@ -44,8 +44,8 @@ This script downloads or reads data stored in a `.zip` file and saves it locally
 ```bash
 python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/186/wine+quality.zip --write_to=data/raw/
 ```
-- <url>: URL from internet to download `.zip` file (E.g. https://archive.ics.uci.edu/static/public/186/wine+quality.zip).
-- <write_to>: Path to save the downloaded data (E.g. data/raw).
+- `<url>`: URL from internet to download `.zip` file (E.g. https://archive.ics.uci.edu/static/public/186/wine+quality.zip).
+- `<write_to>`: Path to save the downloaded data (E.g. `data/raw`).
 
 
 ### 2. Clean Data
@@ -53,9 +53,9 @@ This script cleans the dataset by removing duplicates and handling missing value
 ```bash
 python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv --log_path=results/tables/
 ```
-- <input_path>: Path to the raw data file (E.g. data/raw/raw_data.csv).
-- <output_path>: Path to save the cleaned data (E.g. data/processed/cleaned_data.csv).
-- <log-path>: Path to saves results/logs of data cleaning.
+- `<input_path>`: Path to the raw data file (E.g. `data/raw/raw_data.csv`).
+- `<output_path>`: Path to save the cleaned data (E.g. `data/processed/cleaned_data.csv`).
+- `<log-path>`: Path to saves results/logs of data cleaning.
 
 
 ### 3. Data Validation
@@ -63,7 +63,7 @@ This script validates the data against the predefined schema.
 ```bash
 python scripts/data_validation_script.py data/processed/cleaned_data.csv
 ```
-- <input_path>: Path to the cleaned data (E.g. data/processed/cleaned_data.csv).
+- `<input_path>`: Path to the cleaned data (E.g. `data/processed/cleaned_data.csv`).
 
 
 ### 4. Data Splitting and Exploratory Data Analysis (EDA)
@@ -83,10 +83,10 @@ The EDA plots are saved as individual `.png` files. Charts should appear in the 
 python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --train_test_path=data/processed/ --figures_path=results/figures/ --tables_path=results/tables/
 ```
 
-- <clean_data_path>: Path to the cleaned data (E.g. clean_data_path=data/processed/cleaned_data.csv)
-- <train_test_path>: Path to save the train-test splits of the data set. (E.g. data/processed/)
-- <figures_path>: Path to save the figures generated from EDA. (E.g. results/figures/)
-- <tables_path>: Path to save the tables generated from EDA. (E.g. results/tables/)
+- `<clean_data_path>`: Path to the cleaned data (E.g. clean_data_path=data/processed/cleaned_data.csv)
+- `<train_test_path>`: Path to save the train-test splits of the data set. (E.g. data/processed/)
+- `<figures_path>`: Path to save the figures generated from EDA. (E.g. results/figures/)
+- `<tables_path>`: Path to save the tables generated from EDA. (E.g. results/tables/)
 
 ### 5. Preprocessing and Model Selection
 This script creates a preprocessor, and performs 5-fold cross validation on different models. 
@@ -94,23 +94,23 @@ The scores from this cross-valiation are saved, as well as the model with the be
 ```bash
 python scripts/preprocess_model_selection.py --train_data_path=data/processed/ --scores_path=results/tables/ --preprocessor_path=results/models/ --model_path=results/models/
 ```
-- <train_data_path>: Relative path to retrieve training data.
-- <scores_path>: Relative path to save training and validation scores.
-- <preprocessor_path>: Relative path to save the preprocessor as .pickle file.
-- <model_path>: Relative path to save best performing model as .pickle file.
+- `<train_data_path>`: Relative path to retrieve training data.
+- `<scores_path>`: Relative path to save training and validation scores.
+- `<preprocessor_path>`: Relative path to save the preprocessor as `.pickle` file.
+- `<model_path>`: Relative path to save best performing model as `.pickle` file.
 
 ### 6. Model Tuning
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
 ```bash
 python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv results/tables/best_params.csv
 ```
-- <model_path>: Path to the retrieve pre-trained model file (.pickle).
-- <best_model_path>: Path to save the fine-tuned model (.picke).
-- <X_train_path>: Path to the training features (.CSV).
-- <y_train_path>: Path to the training labels (.CSV).
-- <X_test_path>: Path to the testing features (.CSV).
-- <y_test_path>: Path to the testing labels (.CSV).
-- <params_output_path>: Path to save the best parameters (CSV).
+- `<model_path>`: Path to the retrieve pre-trained model file (`.pickle`).
+- `<best_model_path>`: Path to save the fine-tuned model (`.pickle`).
+- `<X_train_path>`: Path to the training features (`.CSV`).
+- `<y_train_path>`: Path to the training labels (`.CSV`).
+- `<X_test_path>`: Path to the testing features (`.CSV`).
+- `<y_test_path>`: Path to the testing labels (`.CSV`).
+- `<params_output_path>`: Path to save the best parameters (`.CSV`).
 
 ### 7. Model Evaluation
 This script finds the accuracy of the model for predictions on the testing set.
@@ -118,10 +118,10 @@ It also creates and saves confusion matrices using the One vs Rest method of sco
 ```bash
 python scripts/model_evaluation.py --tuned_model_path=results/models/best_model.pickle --test_split_path=data/processed/ --test_accuracy_path=results/tables/ --figures_path=results/figures/
 ```
-- <tuned_model_path>: Relative path to the tuned model after hyperparameter tuning.
-- <test_split_path>: Relative path to testing split of the data set.
-- <test_accuracy_path>: Relative path to save test accuracy.
-- <figures_path>: Path to save any figures from evaluation.
+- `<tuned_model_path>`: Relative path to the tuned model after hyperparameter tuning.
+- `<test_split_path>`: Relative path to testing split of the data set.
+- `<test_accuracy_path>`: Relative path to save test accuracy.
+- `<figures_path>`: Path to save any figures from evaluation.
 
 ### 8. Report Generation
 
