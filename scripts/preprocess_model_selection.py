@@ -111,7 +111,7 @@ def main(train_data_path, scores_path, preprocessor_path, model_path):
     results_df = pd.DataFrame(results).T
 
     # Save results_df to .csv file to scores_path
-    results_df.to_csv(os.path.join(scores_path, "inital_model_scores.csv"), index=True)
+    results_df.to_csv(os.path.join(scores_path, "initial_model_scores.csv"), index=True)
     print(f"Successfully saved cross validation results to {scores_path}.")
 
     # Save model pipeline with best validation score to model_path
