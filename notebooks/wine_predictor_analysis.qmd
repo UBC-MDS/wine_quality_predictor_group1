@@ -64,42 +64,51 @@ from scipy.stats import loguniform
 import pandera as pa
 ```
 
-```{python}
-df = pd.read_csv('../data/winequality_red.csv', sep = ';')
-df.head()
-```
 
 @tbl-wine-dataset-preview provides a preview of the wine dataset used in the analysis.
 
 ```{python}
 #| label: tbl-wine-dataset-preview
 #| tbl-cap: "Preview of wine dataset to be used in analysis."
-df.head()
+df = pd.read_csv("../data/raw_data.csv")
+Markdown(df.head().to_markdown(index=False))
 ```
-
 
 ### Data Cleaning and Duplicates Handling
 
 ```{python}
-df.info()
+#| label: tbl-data-info
+#| tbl-cap: "Info of dataset"
+Markdown(df.info().to_markdown(index=False))
 ```
 
 ```{python}
-#| scrolled: true
-df.isnull().sum()
+#| label: tbl-missing-values
+#| tbl-cap: "Summary of Missing Values"
+missing_values = df.isnull().sum()
+missing_values_summary = pd.DataFrame({
+    "Column": missing_values.index,
+    "Missing Values": missing_values.values
+})
+Markdown(missing_values_summary.to_markdown(index=False))
 ```
 
-A thorough examination of the dataset revealed no missing values in any of the columns. This was verified by checking for null entries in all rows and columns using methods such as isnull() and info() in Python. 
+A thorough examination of the dataset revealed no missing values in any of the columns. This was verified by checking for null entries in all rows and columns using methods such as `isnull()` and `info()` in Python.
 
 ```{python}
+#| label: tbl-duplicates
+#| tbl-cap: "Summary of Duplicate Rows"
 duplicates = df[df.duplicated()]
-print(duplicates)
-```
+duplicates_summary = pd.DataFrame({
+    "Total Duplicates": [len(duplicates)]
+})
+Markdown(duplicates_summary.to_markdown(index=False))
 
-```{python}
+# Remove duplicates
 df = df.drop_duplicates()
 ```
-@tbl-data-cleaning-summary summarizes the data cleaning steps undertaken.
+
+@tbl-data-info, @tbl-missing-values, and @tbl-duplicates summarize the data inspection and cleaning steps undertaken.
 
 ```{python}
 #| label: tbl-data-cleaning-summary
@@ -110,6 +119,8 @@ cleaning_summary = pd.DataFrame({
 })
 cleaning_summary
 ```
+
+@tbl-data-cleaning-summary summarizes the data cleaning steps undertaken.
 
 ### Columns
 
