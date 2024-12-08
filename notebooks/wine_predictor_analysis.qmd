@@ -5,6 +5,17 @@ jupyter:
     display_name: 'Python [conda env:522_group1]'
     language: python
     name: conda-env-522_group1-py
+format:
+  html:
+    toc: true
+    toc-depth: 3
+  pdf:
+    toc: true
+    toc-depth: 3
+editor: source
+bibliography: references.bib
+execute:
+  echo: false
 ---
 
 by Yixuan Gao, Bryan Lee, Wangkai Zhu, Timothy Singh
