@@ -51,7 +51,7 @@ python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/
 ### 2. Clean Data
 This script cleans the dataset by removing duplicates and handling missing values.
 ```bash
-python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv
+python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv --log_path results/tables/
 ```
 - <input_path>: Path to the raw data file (e.g., data/raw/raw_data.csv).
 - <output_path>: Path to save the cleaned data (e.g., data/processed/cleaned_data.csv).

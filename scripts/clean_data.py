@@ -6,9 +6,9 @@ import pandas as pd
 import os
 
 @click.command()
-@click.argument('input_path', type=str)
-@click.argument('output_path', type=str)
-@click.option('--log_path', type=str, help="Path to directory where the logs will be saved")
+@click.option('--input_path', type=str, required=True, help="Path to the raw data file")
+@click.option('--output_path', type=str, required=True, help="Path to save the cleaned data file")
+@click.option('--log_path', type=str, required=True, help="Path to directory where logs will be saved")
 def main(input_path, output_path, log_path):
     """
     Cleans data from a local relative path, saves the cleaned output, and logs details.
