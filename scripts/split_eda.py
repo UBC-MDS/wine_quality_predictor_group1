@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import click
 import os
-import pickle
-
 
 @click.command()
 @click.option("--clean_data_path", type=str, help="Path to pull raw data for train_test_split.")
