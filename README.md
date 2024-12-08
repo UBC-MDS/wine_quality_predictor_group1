@@ -102,7 +102,7 @@ python scripts/preprocess_model_selection.py --train_data_path=data/processed/ -
 ### 6. Model Tuning
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
 ```bash
-python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv
+python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv results/models/best_params.csv
 ```
 - <model_path>: Path to the retrieve pre-trained model file (.pickle).
 - <best_model_path>: Path to save the fine-tuned model (.picke).
@@ -110,6 +110,7 @@ python scripts/tuning_script.py results/models/base_model.pickle results/models/
 - <y_train_path>: Path to the training labels (.CSV).
 - <X_test_path>: Path to the testing features (.CSV).
 - <y_test_path>: Path to the testing labels (.CSV).
+- <params_output_path>: Path to save the best parameters (CSV).
 
 ### 7. Model Evaluation
 This script finds the accuracy of the model for predictions on the testing set.
