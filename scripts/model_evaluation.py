@@ -61,6 +61,12 @@ def main(tuned_model_path, test_split_path, test_accuracy_path, figures_path):
         matrix.plot(cmap='Greens')
         plt.savefig(f"{figures_path}confusion_matrix_class_{labels[i]}.png")
         print(f"Saved confusion_matrix_class_{labels[i]}.png to {figures_path}")
+ 
+    # Create a DataFrame with proper column names and labels to summarize confusion matrices
+    columns = ["True Negative", "False Positive", "False Negative", "True Positive"]
+    conf_matrix_summary_df = pd.DataFrame(confusion_matrix.reshape(len(labels), -1), index=labels, columns=columns).T
+    conf_matrix_summary_df.to_csv(os.path.join(test_accuracy_path, "confusion_matrix_summary.csv"))
+    print(f"Saved confusion_matrix_summary.csv to {test_accuracy_path}")
         
 if __name__ ==  "__main__":
     main()

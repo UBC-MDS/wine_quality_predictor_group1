@@ -1,21 +1,18 @@
 ---
 title: Predicting wine quality given chemical characteristics of the wine
-jupyter:
-  kernelspec:
-    display_name: 'Python [conda env:522_group1]'
-    language: python
-    name: conda-env-522_group1-py
+author: Yixuan Gao, Bryan Lee, Wangkai Zhu, Timothy Singh
 format:
-  html:
-    toc: true
-    toc-depth: 3
-  pdf:
-    toc: true
-    toc-depth: 3
+    html:
+        toc: true
+        toc-depth: 4
+    pdf:
+        toc: true
+        toc-depth: 3
 editor: source
 bibliography: references.bib
 execute:
-  echo: false
+    echo: false
+    warning: false
 ---
 
 by Yixuan Gao, Bryan Lee, Wangkai Zhu, Timothy Singh
@@ -52,7 +49,7 @@ import pandas as pd
 ```{python}
 #| label: tbl-wine-dataset-preview
 #| tbl-cap: "Preview of wine dataset to be used in analysis."
-df = pd.read_csv("../data/raw_data.csv")
+df = pd.read_csv("../data/raw/raw_data.csv")
 Markdown(df.head().to_markdown(index=False))
 ```
 
@@ -61,7 +58,7 @@ Markdown(df.head().to_markdown(index=False))
 ```{python}
 #| label: tbl-data-info
 #| tbl-cap: "Info of dataset"
-Markdown(df.info().to_markdown(index=False))
+df.info()
 ```
 
 ```{python}
@@ -231,6 +228,7 @@ feature_pairplot
 _Figure 15: Regression Pairplot for All Features_
 
 ### Analysis
+#### Model Selection
 
 From the Exploratory Data Analysis, it was observed that all features within the dataset were numeric. In order to ensure the the data is interpreted properly by the models, a preprocessor was used. This preprocessor included a `StandardScaler()` [@scikit_learn_standard_scaler] to ensure standardization of numerical features. 
 
@@ -253,7 +251,9 @@ model-selection-scores = pd.read_csv("../results/tables/initial_model_scores.csv
 Markdown(model-selection-scores.to_markdown(index = False))
 ```
 
-From these results, it appears that the RBF SVM model gives the best validation scores. Therefore, this model will be used for hyperparameter tuning in the following section.
+From these results, it appeared that the `{python} model-selection-scores["test_score"].idxmax()` gives the best validation scores. Therefore, this model will be used for hyperparameter tuning in the following section.
+
+#### Hyperparameter Tuning
 
 ```{python}
 # Hyperparameter tuning for the best performing model
@@ -278,45 +278,43 @@ print(f"Best hyperparameters: {best_params}")
 print(f"Best cross-validation score: {best_score}")
 ```
 
-```{python}
-# Using the model with the best hyperparameters on the testing set
 
-best_model = random_search.best_estimator_
-test_score = best_model.score(X_test, y_test)
-test_accuracy_df = pd.DataFrame({"accuracy": [test_score]})
-test_accuracy_df
+#### Model Evaluation
+```{python}
+test_accuracy_score = pd.read_csv("../results/tables/test_accuracy.csv")
+test_accuracy = round(test_accuracy_score.iloc[0][0], 3)
 ```
 
-_Table 4: Accuracy of model with best hyperparameters on the testing set._
+The `{python} results_df["test_score"].idxmax()` model with the best tuned hyperparameters was used to find accuracy on the testing set. This resulted in an accuracy of `{python}test_accuracy`.
+
+Specific breakdowns of what predictions the model made can be summarized in the confusion matrices below:
+
+![Confusion matrix for predictions where wine quality = 3.](../results/figures/confusion_matrix_class_3.png){#fig-confusion_matrix_class_3 width=100%}
+
+
+![Confusion matrix for predictions where wine quality = 4.](../results/figures/confusion_matrix_class_4.png){#fig-confusion_matrix_class_4 width=100%}
+
+
+![Confusion matrix for predictions where wine quality = 5.](../results/figures/confusion_matrix_class_5.png){#fig-confusion_matrix_class_5 width=100%}
+
+
+![Confusion matrix for predictions where wine quality = 6.](../results/figures/confusion_matrix_class_6.png){#fig-confusion_matrix_class_6 width=100%}
+
+
+![Confusion matrix for predictions where wine quality = 7.](../results/figures/confusion_matrix_class_7.png){#fig-confusion_matrix_class_7 width=100%}
+
+
+![Confusion matrix for predictions where wine quality = 8.](../results/figures/confusion_matrix_class_8.png){#fig-confusion_matrix_class_8 width=100%}
+
+
+The numbers of true positives, true negatives, false positives and false negatives from the above confusion matricies are summarized here:
+
 
 ```{python}
-# Multi-class Confusion Matrix
-labels = np.unique(y_test)
-
-y_pred = best_model.predict(X_test)
-confusion_matrix = multilabel_confusion_matrix(y_test, y_pred, labels = labels)
-
-# Iterate over each label's confusion matrix
-
-# With reference to: sklearn.metrics.multilabel_confusion_matrix. In Scikit-learn documentation. 
-# Retrieved November 23, 2024, from https://scikit-learn.org/dev/modules/generated/sklearn.metrics.multilabel_confusion_matrix.html
-
-for i in range(len(labels)):
-    matrix = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix[i], 
-                                    display_labels=["Not " + str(labels[i]), labels[i]])
-    matrix.plot(cmap='Greens')  # Optional: use a color map to enhance visualization
-    plt.title(f"Figure {i+16} - Confusion Matrix for Label: {labels[i]}")
-    plt.show()
-```
-
-_Figures 16-21: Confusion matrices for testing data_
-
-```{python}
-columns = ["True Negative", "False Positive", "False Negative", "True Positive"]
- 
-# Create a DataFrame with proper column names and labels to summarize confusion matrices
-conf_matrix_summary_df = pd.DataFrame(confusion_matrix.reshape(len(labels), -1), index=labels, columns=columns).T
-conf_matrix_summary_df
+#| label: confusion-matrix-summary 
+#| tbl-cap: Summary of true positives, true negatives, false positives and false negatives from confusion matricies
+confusion-matrix-summary = pd.read_csv("../results/tables/confusion_matrix_summary.csv")
+Markdown(confusion-matrix-summary.to_markdown(index = False))
 ```
 
 _Table 5: Summary of Confusion Matrices_
