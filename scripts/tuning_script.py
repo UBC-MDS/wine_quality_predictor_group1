@@ -1,3 +1,6 @@
+# Author: Wangkai Zhu
+# Date: 2024-12-07
+
 import numpy as np
 import pandas as pd
 import pickle
@@ -18,12 +21,12 @@ def main(model_path, best_model_path, x_train_path, y_train_path, x_test_path, y
     """
     Fine-tunes a pre-trained model and saves the best model.
 
-    MODEL_PATH: Path to the pre-trained model file (.pkl).
-    BEST_MODEL_PATH: Path to save the fine-tuned model (.pkl).
-    X_TRAIN_PATH: Path to the training features (CSV).
-    Y_TRAIN_PATH: Path to the training labels (CSV).
-    X_TEST_PATH: Path to the testing features (CSV).
-    Y_TEST_PATH: Path to the testing labels (CSV).
+    model_path: Path to the pre-trained model file (.pkl).
+    best_model_path: Path to save the fine-tuned model (.pkl).
+    x_train_path: Path to the training features (CSV).
+    y_train_path: Path to the training labels (CSV).
+    x_test_path: Path to the testing features (CSV).
+    y_test_path: Path to the testing labels (CSV).
     """
     # Load the saved model pipeline
     with open(model_path, "rb") as f:
@@ -62,10 +65,5 @@ def main(model_path, best_model_path, x_train_path, y_train_path, x_test_path, y
         pickle.dump(random_search.best_estimator_, f)
 
     print(f"Best model saved to {best_model_path}")
-
-    # Using the model with the best hyperparameters on the testing set
-    test_score = random_search.best_estimator_.score(X_test, y_test)
-    print(f"Test score with best model: {test_score}")
-
 if __name__ == "__main__":
     main()
