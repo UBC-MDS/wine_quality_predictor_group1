@@ -1,0 +1,413 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: Predicting wine quality given chemical characteristics of the wine\n",
+        "author: Yixuan Gao, Bryan Lee, Wangkai Zhu, Timothy Singh\n",
+        "format:\n",
+        "    html:\n",
+        "        toc: true\n",
+        "        toc-depth: 4\n",
+        "    pdf:\n",
+        "        toc: true\n",
+        "        toc-depth: 4\n",
+        "editor: source\n",
+        "bibliography: references.bib\n",
+        "execute:\n",
+        "    echo: false\n",
+        "    warning: false\n",
+        "---\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Summary\n",
+        "\n",
+        "This project aims to build a machine learning model to classify the quality of red wine based on its physicochemical properties. The target variable, wine quality, is scored on a discrete scale from 0 (poor quality) to 10 (high quality), presenting a multi-class classification challenge. The dataset, sourced from the UC Irvine Machine Learning Repository [@uci_wine_quality], comprises 1,599 observations with 11 continuous features such as acidity, alcohol content, and citric acid [@cortez2009modeling].\n",
+        "\n",
+        "Six (6) classification algorithms were evaluated: Dummy Classifier (as a baseline), Logistic Regression, Decision Tree, K-Nearest Neighbors (KNN), Naive Bayes and Support Vector Machine with a Radial Basis Function kernel (SVM RBF). 5-fold cross-validation was used with training data to find the best classification algorithm, based on accuracy, which was the SVM RBF model. Hyperparameter tuning was used to optimize this model and assess its generalization performance. The `C`, `gamma` and `decision_function_shape` hyperparameters on SVC were tuned using the `RandomizedSearchCV()` from `sklearn`. The model with hyperparameters that gave the best accuracy was selected for deployment on the test set. This model gave an accuracy on the testing set of around 0.6.\n",
+        "\n",
+        "By leveraging machine learning, this project seeks to provide a systematic and measurable way to predict wine quality, aiding manufacturers and suppliers in assessing product value based on its chemical properties.\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "Red wine has been a cultural and economic staple since ancient times, originating from early civilizations like the Greeks and evolving into a global industry valued at approximately 109.5 billion USD. Despite its widespread availability, differentiating between high and low-quality wines remains a challenge for most consumers. Traditionally, this task has relied on the expertise of sommeliers, whose judgments are often subjective.\n",
+        "\n",
+        "This project aims to bridge the gap between subjective assessments and objective measurement by utilizing machine learning to predict wine quality. By analyzing the physicochemical properties of red wine—such as acidity, alcohol content, and sugar levels—we aim to classify its quality on a scale from 0 to 10.\n",
+        "\n",
+        "Using the Red Wine Quality Dataset from the UC Irvine Machine Learning Repository, we evaluate the performance of several classification algorithms: Logistic Regression, Decision Tree, KNN, Naive Bayes and SVM with an RBF kernel. Through hyperparameter tuning and cross-validation, the goal is to identify the most accurate model and demonstrate the practical application of data-driven decision-making in the wine industry [@cortez2009semanticscholar].\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Methods & Results:\n",
+        "\n",
+        "### Data Loading\n"
+      ],
+      "id": "3c767765"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "from IPython.display import Markdown\n",
+        "import pandas as pd"
+      ],
+      "id": "e6e4867c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "@tbl-wine-dataset-preview provides a preview of the wine dataset used in the analysis.\n"
+      ],
+      "id": "c6195e89"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-wine-dataset-preview\n",
+        "#| tbl-cap: Preview of wine dataset to be used in analysis.\n",
+        "df = pd.read_csv(\"../data/raw/raw_data.csv\", sep = \";\")\n",
+        "Markdown(df.head().to_markdown(index=False))"
+      ],
+      "id": "tbl-wine-dataset-preview",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Data Cleaning and Duplicates Handling\n"
+      ],
+      "id": "83f7501c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-missing-values\n",
+        "#| tbl-cap: Summary of Missing Values\n",
+        "missing_values = df.isnull().sum()\n",
+        "missing_values_summary = pd.DataFrame({\n",
+        "    \"Column\": missing_values.index,\n",
+        "    \"Missing Values\": missing_values.values\n",
+        "})\n",
+        "Markdown(missing_values_summary.to_markdown(index=False))"
+      ],
+      "id": "tbl-missing-values",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "A thorough examination of the dataset revealed no missing values in any of the columns. This was verified by checking for null entries in all rows and columns using methods such as `isnull()` and `info()` in Python.\n"
+      ],
+      "id": "679f8dc7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-duplicates\n",
+        "#| tbl-cap: Summary of Duplicate Rows\n",
+        "duplicates = df[df.duplicated()]\n",
+        "duplicates_summary = pd.DataFrame({\n",
+        "    \"Total Duplicates\": [len(duplicates)]\n",
+        "})\n",
+        "Markdown(duplicates_summary.to_markdown(index=False))\n",
+        "\n",
+        "# Remove duplicates\n",
+        "df = df.drop_duplicates()"
+      ],
+      "id": "tbl-duplicates",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "@tbl-missing-values summarizes the missing data in each column.\n"
+      ],
+      "id": "cc515671"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-data-cleaning-summary\n",
+        "#| tbl-cap: Summary of Data Cleaning Steps.\n",
+        "cleaning_summary = pd.DataFrame({\n",
+        "    \"Step\": [\"Initial Missing Values\", \"Removed Duplicates\"],\n",
+        "    \"Count\": [0, len(duplicates)]\n",
+        "})\n",
+        "cleaning_summary"
+      ],
+      "id": "tbl-data-cleaning-summary",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "@tbl-data-cleaning-summary summarizes the data cleaning steps undertaken.\n",
+        "\n",
+        "### Columns\n",
+        "\n",
+        "- fixed acidity: grams of tartaric acid per cubic decimeter.\n",
+        "- volatile acidity: grams of acetic acid per cubic decimeter.\n",
+        "- citric acid: grams of citric acid per cubic decimeter.\n",
+        "- residual sugar: grams of residual sugar per cubic decimeter.\n",
+        "- chlorides: grams of sodium chloride per cubic decimeter.\n",
+        "- free sulfur dioxide: grams of unreacted sulfur dioxide per cubic decimeter.\n",
+        "- total sulfur dioxide: grams of total sulfur dioxide per cubic decimeter.\n",
+        "- density: density of the wine in grams per cubic decimeter.\n",
+        "- pH: pH value of the wine\n",
+        "- sulphates: grams of potassium sulphate per cubic decimeter\n",
+        "- alcohol : percentage volume of alcohol content.\n",
+        "- quality : integer range from 0 (representing low-quality) to 10 (representing high-quality) [@torok2023ml_wine_quality].\n",
+        "\n",
+        "\n",
+        "### Data Validation\n",
+        "\n",
+        "The dataset has been validated against the following criteria:\n",
+        "\n",
+        "1. **Column Data Types**: All columns conform to the expected data types.\n",
+        "2. **Value Ranges**: All columns conform to the specified range. \n",
+        "3. **Duplicate Rows**: No duplicate rows were found.\n",
+        "4. **Empty Rows**: No null values or rows with all null values were found.\n",
+        "\n",
+        "The dataset passed all validation checks successfully.\n",
+        "\n",
+        "\n",
+        "### Data Splitting\n",
+        "\n",
+        "Our dataset was split into two groups - 80% is split for our training data while the remaining 20% is reserved for our testing set. \n",
+        "\n",
+        "\n",
+        "### Exploratory Data Analysis (EDA)\n"
+      ],
+      "id": "5f86508f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-x-train-describe\n",
+        "#| tbl-cap: 'Summary of wine data set with count, mean and quartile ranges'\n",
+        "x_train_describe = pd.read_csv(\"../results/tables/describe_table.csv\")\n",
+        "x_train_describe.rename(columns={ x_train_describe.columns[0]: \"statistic\" }, inplace = True)\n",
+        "Markdown(x_train_describe.to_markdown(index = False))"
+      ],
+      "id": "tbl-x-train-describe",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "![Distribution of Target Class in the Data Set](../results/figures/target_distribution_plot.png){#fig-target-dist width=100%}\n",
+        "\n",
+        "It is noted that not all possible target classes (from 0 to 10) are present in the training data.\n",
+        "\n",
+        "For our Exploratory Data Analysis we wanted to see if our features have a linear correlation with each other. The below plot is a heatmap which shows the pearson correlation for each feature. \n",
+        "\n",
+        "![Wine Quality Features Heatmap - Pearson Correlation](../results/figures/correlation_heatmap.png){#fig-correlation_heatmap width=70%}\n",
+        "\n",
+        "It would appear at first glance that there are a few features which seem to have a moderate linear correlation with each other. Some notable connections we can make from @fig-correlation_heatmap is between pH levels and fixed acidity which appears to have a negative correlation. Density and fixed acidity on the other hand appears to have a positive correlation, with fixed acidity being a common feature between both examples. \n",
+        "\n",
+        "![KDE Plots for all features](../results/figures/feature_distributions.png){#fig-feature_distributions width=80%}\n",
+        "\n",
+        "The KDE Plot shows that while some of our features are normally distributed, not all of them are. There are a few features which are skewed to the right such as alcohol and sulphates. There are other features in @fig-feature_distributions which have multiple peaks such as volatile acidity and citric acid.\n",
+        "\n",
+        "![Regression Pairplot for All Features](../results/figures/feature_pairplots.png){#fig-feature_pairplots width=100%}\n",
+        "\n",
+        "Finally @fig-feature_pairplots is a pairplot which shows the actual distribution of the datapoints feature by feature.\n",
+        "\n",
+        "\n",
+        "\n",
+        "### Analysis\n",
+        "\n",
+        "\n",
+        "#### Model Selection\n",
+        "\n",
+        "From the Exploratory Data Analysis, it was observed that all features within the dataset were numeric. In order to ensure the the data is interpreted properly by the models, a preprocessor was used. This preprocessor included a `StandardScaler()` [@scikit_learn_standard_scaler] to ensure standardization of numerical features. \n",
+        "\n",
+        "Several popular classification models were examined for this task which included:.\n",
+        "\n",
+        "- Dummy Classifier*\n",
+        "- Decision Tree\n",
+        "- k-Nearest Neightbours Classifier\n",
+        "- Support Vector Machine with Radial Basis Function\n",
+        "- Gaussian Naive Bayes\n",
+        "- Logistic Regression\n",
+        "\n",
+        "\\* Note this model was used as a baseline, as the default behaviour would always predict the most frequent appearing class in the training set [@scikit_learn_dummy_classifier].\n",
+        "\n",
+        "The results of 5-fold cross validation on the training set for each model is shown below:\n"
+      ],
+      "id": "4069a21c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-model-selection-scores\n",
+        "#| tbl-cap: 'Fit time, score time, training score and validation scores for different models.'\n",
+        "model_selection_scores = pd.read_csv(\"../results/tables/initial_model_scores.csv\")\n",
+        "model_selection_scores = model_selection_scores.set_index(model_selection_scores.columns[0])\n",
+        "model_selection_scores.index.name = \"model\"\n",
+        "Markdown(model_selection_scores.to_markdown(index = True))"
+      ],
+      "id": "tbl-model-selection-scores",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "From these results, it appeared that the `{python} model_selection_scores[\"test_score\"].idxmax()` gives the best validatio nscores. Therefore, this model will be used for hyperparameter tuning in the following section.\n",
+        "\n",
+        "\n",
+        "\n",
+        "#### Hyperparameter Tuning\n",
+        "\n",
+        "After performing `RandomizedSearchCV` on the `{python} model_selection_scores[\"test_score\"].idxmax()` model, the best parameters for the model is as follows in @tbl-best_parameters: \n"
+      ],
+      "id": "e6b727b7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-best_parameters\n",
+        "#| tbl-cap: Best parameters for the SVC model along with the best score.\n",
+        "tuning_score = pd.read_csv(\"../results/tables/best_params.csv\")\n",
+        "Markdown(tuning_score.to_markdown(index = True))"
+      ],
+      "id": "tbl-best_parameters",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "#### Model Evaluation"
+      ],
+      "id": "059c82e5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "test_accuracy_score = pd.read_csv(\"../results/tables/test_accuracy.csv\")\n",
+        "test_accuracy = round(test_accuracy_score.iloc[0][0], 3)"
+      ],
+      "id": "2cafe639",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The `{python} model_selection_scores[\"test_score\"].idxmax()` model with the best tuned hyperparameters was used to find accuracy on the testing set. This resulted in an accuracy of `{python} float(test_accuracy)`.\n",
+        "\n",
+        "Specific breakdowns of what predictions the model made can be summarized in the confusion matrices below:\n",
+        "\n",
+        "![Confusion matrix for predictions where wine quality = 3](../results/figures/confusion_matrix_class_3.png){#fig-confusion_matrix_class_3 width=100%}\n",
+        "\n",
+        "\n",
+        "![Confusion matrix for predictions where wine quality = 4](../results/figures/confusion_matrix_class_4.png){#fig-confusion_matrix_class_4 width=100%}\n",
+        "\n",
+        "\n",
+        "![Confusion matrix for predictions where wine quality = 5](../results/figures/confusion_matrix_class_5.png){#fig-confusion_matrix_class_5 width=100%}\n",
+        "\n",
+        "\n",
+        "![Confusion matrix for predictions where wine quality = 6](../results/figures/confusion_matrix_class_6.png){#fig-confusion_matrix_class_6 width=100%}\n",
+        "\n",
+        "\n",
+        "![Confusion matrix for predictions where wine quality = 7](../results/figures/confusion_matrix_class_7.png){#fig-confusion_matrix_class_7 width=100%}\n",
+        "\n",
+        "\n",
+        "![Confusion matrix for predictions where wine quality = 8](../results/figures/confusion_matrix_class_8.png){#fig-confusion_matrix_class_8 width=100%}\n",
+        "\n",
+        "\n",
+        "The numbers of true positives, true negatives, false positives and false negatives from the above confusion matricies are summarized here:\n"
+      ],
+      "id": "23c8d43a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: tbl-confusion-matrix-summary\n",
+        "#| tbl-cap: 'Summary of true positives, true negatives, false positives and false negatives from confusion matricies'\n",
+        "confusion_matrix_summary = pd.read_csv(\"../results/tables/confusion_matrix_summary.csv\")\n",
+        "confusion_matrix_summary = confusion_matrix_summary.set_index(confusion_matrix_summary.columns[0])\n",
+        "confusion_matrix_summary.index.name = \"Confusion Matrix Metric\"\n",
+        "Markdown(confusion_matrix_summary.to_markdown(index = True))"
+      ],
+      "id": "tbl-confusion-matrix-summary",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Discussion\n",
+        "\n",
+        "The evaluation of multiple machine learning models for classifying red wine quality revealed that the Support Vector Classifier (SVC) with a Radial Basis Function (RBF) kernel performed the best in terms of validation accuracy after hyperparameter tuning. The final testing accuracy (`{python} float(test_accuracy)`) demonstrated the model's ability to generalize fairly decently to unseen data. Among the other models, Logistic Regression also achieved a reasonable validation accuracy but fell short compared to the SVC RBF. The Decision Tree model exhibited overfitting, achieving perfect accuracy on the training data but only moderate validation accuracy. Models like k-Nearest Neighbors and Naive Bayes performed relatively poorly, with lower accuracies and limited predictive power.\n",
+        "\n",
+        "Despite the superior accuracy of the SVC RBF model, it required the longest fit and score times, highlighting potential limitations in computational efficiency, particularly in scenarios requiring real-time predictions or processing large datasets.\n",
+        "\n",
+        "The findings are somewhat aligned with expectations. The SVC RBF's strong performance is consistent with its reputation for handling complex, non-linear relationships in the data effectively. However, the overall accuracy `{python} float(test_accuracy)` is lower than ideal for a practical classification system, indicating challenges in predicting wine quality with high precision based solely on the physicochemical features provided. This outcome suggests that wine quality may be influenced by additional factors, such as sensory data or external conditions, that were not captured in the dataset.\n",
+        "\n",
+        "The pronounced overfitting in the Decision Tree model and the relatively modest performance of simpler models like Naive Bayes and k-NN were expected, as these models are less equipped to capture intricate relationships in high-dimensional datasets.\n",
+        "\n",
+        "The classification accuracy achieved in this project has implications for the practical applications of such models in the wine industry. While the model can provide a rough estimate of wine quality, its predictions may not be reliable enough for high-stakes decisions, such as pricing or marketing. However, it could still serve as a preliminary screening tool for winemakers to assess batches of wine based on their chemical profiles.\n",
+        "\n",
+        "The findings also highlight the importance of computational efficiency. Although the SVC RBF model outperformed others in accuracy, its extended fit and score times may limit its usability in time-sensitive applications. This trade-off between accuracy and efficiency should be carefully considered when deploying the model. \n",
+        "\n",
+        "It should be noted that the predictions of targets of this problem have an inherent ordering from 1 to 10, where lower values suggest worse quality wine and higher values suggest better quality wine. \n",
+        "\n",
+        "This study raises several avenues for future exploration: \n",
+        "\n",
+        "* How would including additional physicochemical features or sensory attributes, such as taste or aroma, influence model performance? Similarly, would excluding less impactful features reduce noise and improve accuracy?\n",
+        "* Would increasing the dataset size or balancing the class distribution lead to better generalization performance?\n",
+        "* Will using a different kernel for the SVC yield greater performance?\n",
+        "\n",
+        "<br>\n",
+        "\n",
+        "## References\n"
+      ],
+      "id": "f0252369"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\timot\\miniforge3\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
