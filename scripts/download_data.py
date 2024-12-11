@@ -81,25 +81,23 @@ def main(url, write_to):
     -------
     None
     """
-    temp_zip_path = os.path.join(write_to, "temp.zip")
+    zip_path = os.path.join(write_to, "raw_data.zip")
     target_file = "winequality-red.csv"
     raw_data_file = "raw_data.csv"
 
     try:
-        download_file(url, temp_zip_path)
-        print(f"File successfully downloaded from {url} to {temp_zip_path}")
+        download_file(url, zip_path)
+        print(f"File successfully downloaded from {url} to {zip_path}")
 
         # Extract the specific file
-        extract_specific_file(temp_zip_path, target_file, os.path.join(write_to, target_file))
+        extract_specific_file(zip_path, target_file, os.path.join(write_to, target_file))
         print(f"Extracted {target_file} to {write_to}")
 
         # Rename the extracted file
         renamed_file_path = os.path.join(write_to, raw_data_file)
         os.rename(write_to + target_file, renamed_file_path)
         print(f"Renamed {target_file} to {raw_data_file}")
-
-        # Remove the temporary ZIP file
-        os.remove(temp_zip_path)
+        
     except Exception as e:
         print(f"An error occurred: {e}")
 
