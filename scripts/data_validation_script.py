@@ -4,6 +4,8 @@
 import pandera as pa
 import pandas as pd
 import click
+from deepchecks.tabular import Dataset
+from deepchecks.tabular.checks import FeatureLabelCorrelation
 
 # Define the DataFrame schema
 schema = pa.DataFrameSchema(
@@ -41,6 +43,16 @@ def main(input_path):
         df = pd.read_csv(input_path)
         schema.validate(df)
         print("Dataset validation passed successfully.")
+
+        # Incorporate deep check for feature-label correlation
+        wine_ds = Dataset(df, label="quality", cat_features=[])
+        check_feat_lab_corr = FeatureLabelCorrelation().add_condition_feature_pps_less_than(0.9)
+        check_feat_lab_corr_result = check_feat_lab_corr.run(dataset=wine_ds)
+
+        if not check_feat_lab_corr_result.passed_conditions():
+            raise ValueError("Feature-Label correlation exceeds the maximum acceptable threshold.")
+
+        print("Deepchecks validation passed successfully.")
     # if validation throws an error
     except pa.errors.SchemaError as e:
         print("Schema validation failed:")
