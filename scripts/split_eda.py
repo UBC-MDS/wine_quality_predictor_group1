@@ -72,7 +72,7 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
         try:
             # Target Distribution Plot
             plt.figure(figsize=(8, 4))
-            sns.countplot(x=y_train['quality'])
+            sns.countplot(x=y_train.iloc[:, 0])
             plt.title("Distribution of Target Class in the Data Set")
             plt.savefig(os.path.join(figures_path, "target_distribution_plot.png"), format="png", dpi=300)
             print('Target distribution plot saved.')
