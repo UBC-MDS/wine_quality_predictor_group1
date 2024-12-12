@@ -16,3 +16,6 @@ dependencies:
   - tabulate=0.9.0
   - quarto=1.5.57
   - click=8.1.7
+  - make=4.4.1
+  - pytest=8.3.4
+  - responses=0.24.1
