@@ -25,8 +25,12 @@ The dataset used for this project is the **Red Wine Quality Dataset** from the [
 
 The dataset is referenced from the work of Paulo Cortez et al. ([details here](http://www3.dsi.uminho.pt/pcortez/wine/)).
 
+## Report
+The final report can be found [here](https://github.com/UBC-MDS/wine_quality_predictor_group1/blob/main/report/wine_predictor_analysis_report.pdf)
+
 ---
-## Running the Analysis file with the Docker Container
+## Running the Analysis
+### Docker Container
 1. Clone repository - (https://github.com/UBC-MDS/wine_quality_predictor_group1).
 2. Open Docker Hub and ensure the Docker Hub application is open and logged in with the correct credentials.
 3. In your terminal use `cd wine_quality_predictor_group1` to switch to the newly created repository.
@@ -34,12 +38,12 @@ The dataset is referenced from the work of Paulo Cortez et al. ([details here](h
     - The first time you will need to pull the image which may take a few minutes to load. 
 5. Once the image loads, on your terminal click the link which starts with http://127.0.0.1, it will contain your token information for the Docker Container
     - Make sure you have no other instances of Jupyter Lab is opened on port 8888, as clicking this link will open a Jupyter Lab on this port.
-6. You are able to access the files from this project, to locate the working project file 'notebooks/wine_predictor_analysis_report', and run cells as needed. Outputs, such as model performance metrics and visualizations, will be displayed or saved to the output/ directory.
+6. To run the analysis, enter the following script commands in the terminal.
 7. After closing the container, run the command `docker-compose rm` to clean up the container.
 
 
-## Scripts
-### 1. Download Data
+### Scripts
+#### 1. Download Data
 This script downloads or reads data stored in a `.zip` file and saves it locally.
 ```bash
 python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/186/wine+quality.zip --write_to=data/raw/
@@ -48,7 +52,7 @@ python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/
 - `<write_to>`: Path to save the downloaded data (E.g. `data/raw`).
 
 
-### 2. Clean Data
+#### 2. Clean Data
 This script cleans the dataset by removing duplicates and handling missing values.
 ```bash
 python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv --log_path=results/tables/
@@ -58,7 +62,7 @@ python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=da
 - `<log-path>`: Path to saves results/logs of data cleaning.
 
 
-### 3. Data Validation
+#### 3. Data Validation
 This script validates the data against the predefined schema.
 ```bash
 python scripts/data_validation_script.py data/processed/cleaned_data.csv
@@ -66,7 +70,7 @@ python scripts/data_validation_script.py data/processed/cleaned_data.csv
 - `<input_path>`: Path to the cleaned data (E.g. `data/processed/cleaned_data.csv`).
 
 
-### 4. Data Splitting and Exploratory Data Analysis (EDA)
+#### 4. Data Splitting and Exploratory Data Analysis (EDA)
 This script gets the cleaned data and applies train-test split.
 4 csv files are created in a new `train_test_path`:
  - **X_train.csv**
@@ -88,7 +92,7 @@ python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --
 - `<figures_path>`: Path to save the figures generated from EDA. (E.g. results/figures/)
 - `<tables_path>`: Path to save the tables generated from EDA. (E.g. results/tables/)
 
-### 5. Preprocessing and Model Selection
+#### 5. Preprocessing and Model Selection
 This script creates a preprocessor, and performs 5-fold cross validation on different models. 
 The scores from this cross-valiation are saved, as well as the model with the best evaluation score.
 ```bash
@@ -99,7 +103,7 @@ python scripts/preprocess_model_selection.py --train_data_path=data/processed/ -
 - `<preprocessor_path>`: Relative path to save the preprocessor as `.pickle` file.
 - `<model_path>`: Relative path to save best performing model as `.pickle` file.
 
-### 6. Model Tuning
+#### 6. Model Tuning
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
 ```bash
 python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv results/tables/best_params.csv
@@ -112,7 +116,7 @@ python scripts/tuning_script.py results/models/base_model.pickle results/models/
 - `<y_test_path>`: Path to the testing labels (`.CSV`).
 - `<params_output_path>`: Path to save the best parameters (`.CSV`).
 
-### 7. Model Evaluation
+#### 7. Model Evaluation
 This script finds the accuracy of the model for predictions on the testing set.
 It also creates and saves confusion matrices using the One vs Rest method of scoring.
 ```bash
@@ -123,7 +127,7 @@ python scripts/model_evaluation.py --tuned_model_path=results/models/best_model.
 - `<test_accuracy_path>`: Relative path to save test accuracy.
 - `<figures_path>`: Path to save any figures from evaluation.
 
-### 8. Report Generation
+#### 8. Report Generation
 
 Finally, to generate the report in both `.html` and `.pdf` formats, do the following commands:
 
@@ -137,4 +141,4 @@ These generated reports can be found in the `reports` folder.
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.
 
 ## License
-This project is licensed under the terms described in the LICENSE.md file, under MIT License and Creative Commons License. 
+This project is licensed under the terms described in the `LICENSE.md` file, under MIT License and Creative Commons License. 
