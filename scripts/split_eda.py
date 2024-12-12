@@ -20,8 +20,11 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
     The main function for reading CSV from path, performing train-test split to create our training and testing 
     and creating our EDA visualizations.
     """
-    # Load data
-    df = pd.read_csv(os.path.join(clean_data_path, "data/processed/cleaned_data.csv"))
+    try:
+        # Load data
+        df = pd.read_csv(clean_data_path)
+    except Exception as e:
+        print(f'issue with reading csv: {e}') 
     
     # Train-test split
     def run_TrainTestSplit(df):
@@ -52,10 +55,12 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
             print(f"Unexpected error during train-test split: {e}")
 
     # EDA Charts
-    def run_eda_charts(figures_path, tables_path, X_train):
+    def run_eda_charts(figures_path, tables_path, train_test_path):
         try:
             os.makedirs(figures_path, exist_ok=True)
             os.makedirs(tables_path, exist_ok=True)
+            X_train = pd.read_csv(os.path.join(train_test_path, 'X_train.csv'))
+            y_train = pd.read_csv(os.path.join(train_test_path, 'y_train.csv'))
 
             # Describe plot
             describe_df = X_train.describe()
@@ -67,7 +72,7 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
         try:
             # Target Distribution Plot
             plt.figure(figsize=(8, 4))
-            sns.countplot(x=y_train)
+            sns.countplot(x=y_train['quality'])
             plt.title("Distribution of Target Class in the Data Set")
             plt.savefig(os.path.join(figures_path, "target_distribution_plot.png"), format="png", dpi=300)
             print('Target distribution plot saved.')
@@ -139,7 +144,7 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
 
     # Run the functions
     run_TrainTestSplit(df)
-    run_eda_charts(figures_path, tables_path, X_train)
+    run_eda_charts(figures_path, tables_path, train_test_path)
 
 if __name__ == '__main__':
     main()
