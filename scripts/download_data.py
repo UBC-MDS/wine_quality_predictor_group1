@@ -25,17 +25,23 @@ def download_file(url, output_path):
     """
     response = requests.get(url, stream=True)
 
-    # Check if the URL exists and is accessible
-    if response.status_code != 200:
-        raise ValueError(f"Failed to fetch data from URL: {url}. HTTP status code: {response.status_code}")
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+    except requests.exceptions.RequestException as e:
+        raise ValueError(f"Failed to fetch data from URL: {url}. Error: {e}")
 
-    # Create the directory if it doesn't exist
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    try:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    except OSError as e:
+        raise OSError(f"Failed to create directory for output path {output_path}. Error: {e}")
 
-    # Save the file locally
-    with open(output_path, 'wb') as file:
-        for chunk in response.iter_content(chunk_size=8192):
-            file.write(chunk)
+    try:
+        with open(output_path, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+    except IOError as e:
+        raise IOError(f"Failed to write to file {output_path}. Error: {e}")
 
 def extract_specific_file(zip_path, target_file, output_path):
     """
@@ -54,14 +60,19 @@ def extract_specific_file(zip_path, target_file, output_path):
     -------
     None
     """
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        if target_file not in zip_ref.namelist():
-            raise ValueError(f"The target file {target_file} was not found in the ZIP archive.")
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            if target_file not in zip_ref.namelist():
+                raise ValueError(f"The target file {target_file} was not found in the ZIP archive.")
 
-        # Extract only the specified file
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with zip_ref.open(target_file) as src, open(output_path, 'wb') as dest:
-            dest.write(src.read())
+            # Extract only the specified file
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            with zip_ref.open(target_file) as src, open(output_path, 'wb') as dest:
+                dest.write(src.read())
+    except (zipfile.BadZipFile, KeyError) as e:
+        raise ValueError(f"Failed to extract file {target_file} from {zip_path}. Error: {e}")
+    except IOError as e:
+        raise IOError(f"Failed to write extracted file to {output_path}. Error: {e}")
 
 @click.command()
 @click.option("--url", type=str, help="URL to download data as zip file from the Internet.")
@@ -81,25 +92,27 @@ def main(url, write_to):
     -------
     None
     """
-    temp_zip_path = os.path.join(write_to, "temp.zip")
+    zip_path = os.path.join(write_to, "raw_data.zip")
     target_file = "winequality-red.csv"
     raw_data_file = "raw_data.csv"
 
     try:
-        download_file(url, temp_zip_path)
-        print(f"File successfully downloaded from {url} to {temp_zip_path}")
+        download_file(url, zip_path)
+        print(f"File successfully downloaded from {url} to {zip_path}")
 
         # Extract the specific file
-        extract_specific_file(temp_zip_path, target_file, os.path.join(write_to, target_file))
+        extracted_file_path = os.path.join(write_to, target_file)
+        extract_specific_file(zip_path, target_file, extracted_file_path)
         print(f"Extracted {target_file} to {write_to}")
-
+        
         # Rename the extracted file
         renamed_file_path = os.path.join(write_to, raw_data_file)
-        os.rename(write_to + target_file, renamed_file_path)
-        print(f"Renamed {target_file} to {raw_data_file}")
-
-        # Remove the temporary ZIP file
-        os.remove(temp_zip_path)
+        try:
+            os.rename(extracted_file_path, renamed_file_path)
+            print(f"Renamed {target_file} to {raw_data_file}")
+        except OSError as e:
+            raise OSError(f"Failed to rename file {extracted_file_path} to {renamed_file_path}. Error: {e}")
+            
     except Exception as e:
         print(f"An error occurred: {e}")
 
