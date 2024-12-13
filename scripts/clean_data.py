@@ -20,7 +20,10 @@ def main(input_path, output_path, log_path):
     """
     try:
         # Load the dataset
-        df = pd.read_csv(input_path, sep=';')
+        try:
+            df = pd.read_csv(input_path, sep=';')
+        except FileNotFoundError as e:
+            raise FileNotFoundError(f"The input file at {input_path} was not found. Error: {e}")
 
         # Prepare the log directory
         os.makedirs(log_path, exist_ok=True)
@@ -32,11 +35,14 @@ def main(input_path, output_path, log_path):
         print(f"Dataset overview saved to {overview_file}.")
 
         # Handle missing values
-        missing_values = df.isnull().sum().reset_index()
-        missing_values.columns = ["Column", "Missing Values"]
-        missing_file = os.path.join(log_path, "missing_values.csv")
-        missing_values.to_csv(missing_file, index=False)
-        print(f"Missing values report saved to {missing_file}.")
+        try:
+            missing_values = df.isnull().sum().reset_index()
+            missing_values.columns = ["Column", "Missing Values"]
+            missing_file = os.path.join(log_path, "missing_values.csv")
+            missing_values.to_csv(missing_file, index=False)
+            print(f"Missing values report saved to {missing_file}.")
+        except IOError as e:
+            raise IOError(f"Failed to save missing values report to {missing_file}. Error: {e}")
 
         # Remove duplicates
         duplicates = df[df.duplicated()].reset_index(drop=True)
@@ -48,7 +54,10 @@ def main(input_path, output_path, log_path):
         print(f"Duplicates report saved to {duplicates_file}.")
 
         # Drop duplicates
-        df = df.drop_duplicates()
+        try:
+            df = df.drop_duplicates()
+        except Exception as e:
+            raise ValueError(f"Failed to drop duplicates. Error: {e}")
 
         # Save the cleaned data
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
