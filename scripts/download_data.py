@@ -5,8 +5,10 @@
 
 import click
 import os
-from src.download_file import download_file
-from src.extract_specific_file import extract_specific_file
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from download_file import download_file
+from extract_specific_file import extract_specific_file
 
 
 @click.command()

@@ -2,7 +2,9 @@
 # Date: 2024-12-07
 
 import click
-from src.clean import load_data, save_overview, handle_missing_values, handle_duplicates, save_cleaned_data
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from clean import load_data, save_overview, handle_missing_values, handle_duplicates, save_cleaned_data
 
 
 @click.command()
