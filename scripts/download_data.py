@@ -4,75 +4,10 @@
 
 
 import click
-import requests
 import os
-import zipfile
+from src.download_file import download_file
+from src.extract_specific_file import extract_specific_file
 
-def download_file(url, output_path):
-    """
-    Download a file from the given URL and save it to the specified local path.
-
-    Parameters:
-    ----------
-    url : str
-        The URL of the file to download.
-    output_path : str
-        The local path where the file will be saved.
-
-    Returns:
-    -------
-    None
-    """
-    response = requests.get(url, stream=True)
-
-    try:
-        response = requests.get(url, stream=True)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-    except requests.exceptions.RequestException as e:
-        raise ValueError(f"Failed to fetch data from URL: {url}. Error: {e}")
-
-    try:
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    except OSError as e:
-        raise OSError(f"Failed to create directory for output path {output_path}. Error: {e}")
-
-    try:
-        with open(output_path, 'wb') as file:
-            for chunk in response.iter_content(chunk_size=8192):
-                file.write(chunk)
-    except IOError as e:
-        raise IOError(f"Failed to write to file {output_path}. Error: {e}")
-
-def extract_specific_file(zip_path, target_file, output_path):
-    """
-    Extract a specific file from a ZIP archive.
-
-    Parameters:
-    ----------
-    zip_path : str
-        Path to the ZIP archive.
-    target_file : str
-        The name of the file to extract.
-    output_path : str
-        Path to save the extracted file.
-
-    Returns:
-    -------
-    None
-    """
-    try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            if target_file not in zip_ref.namelist():
-                raise ValueError(f"The target file {target_file} was not found in the ZIP archive.")
-
-            # Extract only the specified file
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            with zip_ref.open(target_file) as src, open(output_path, 'wb') as dest:
-                dest.write(src.read())
-    except (zipfile.BadZipFile, KeyError) as e:
-        raise ValueError(f"Failed to extract file {target_file} from {zip_path}. Error: {e}")
-    except IOError as e:
-        raise IOError(f"Failed to write extracted file to {output_path}. Error: {e}")
 
 @click.command()
 @click.option("--url", type=str, help="URL to download data as zip file from the Internet.")
