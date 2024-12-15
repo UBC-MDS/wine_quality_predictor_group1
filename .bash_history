@@ -48,3 +48,8 @@ quarto render report/wine_predictor_analysis.qmd --to pdf
 quarto render report/wine_predictor_analysis_report.qmd --to html
 quarto render report/wine_predictor_analysis_report.qmd --to pdf
 >>>>>>> b040605b393c6209d5e528615f81d72e850e88bb
+make clean
+make all
+make clean
+make all
+make clean
