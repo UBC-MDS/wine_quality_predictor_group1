@@ -15,42 +15,9 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
-
-# Creating function to return accuracy of from each trained model
-def cross_val_scores(model, X_train, y_train):
-    """
-    Returns mean accuracy from 5-fold cross validation
-
-    Parameters
-    ----------
-    model :
-        scikit-learn model
-    X_train : numpy array or pandas DataFrame
-        values for features from training data
-    y_train : numpy array or pandas Series
-        values for target from training data
-
-    Returns
-    ----------
-        pandas Series with all mean scores from cross_validation
-    """
-
-    scores = cross_validate(model, 
-                            X_train, 
-                            y_train, 
-                            cv = 5, 
-                            return_train_score = True
-                            )
-    
-    mean_scores = pd.DataFrame(scores).mean()
-    std_scores = pd.DataFrame(scores).std()
-    result_scores =[]
-    for i in range(len(scores)):
-        result_scores.append((f"%0.3f (+/- %0.3f)" % (mean_scores.iloc[i], std_scores.iloc[i])))
-
-
-    return pd.Series(data=result_scores, index=mean_scores.index)
-
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from cross_val_scores import get_cross_val_scores
 
 @click.command()
 @click.option("--train_data_path", type=str, help="Relative path to retrieve training data.")
@@ -104,7 +71,7 @@ def main(train_data_path, scores_path, preprocessor_path, model_path):
             model
         )
     
-        results[model_key] = cross_val_scores(model_pipeline,
+        results[model_key] = get_cross_val_scores(model_pipeline,
                                                        X_train,
                                                        y_train)
     

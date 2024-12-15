@@ -21,6 +21,17 @@ def get_cross_val_scores(model, X_train, y_train):
     ----------
         pandas Series with all mean scores from cross_validation
     """
+    if not isinstance(X_train, pd.DataFrame):
+        raise TypeError(f"X_train should be of type pd.Dataframe. Got {type(X_train)}")
+    
+    if not (isinstance(y_train, pd.DataFrame) or isinstance(y_train, pd.Series) or isinstance(y_train, pd.core.frame.DataFrame)):
+        raise TypeError(f"y_train should be of type pd.Dataframe or pd.Series. Got {type(y_train)}")
+
+    if X_train.shape[0] == 0:
+        raise ValueError("The X_train DataFrame is empty.")
+    
+    if y_train.shape[0] == 0:
+        raise ValueError("The y_train DataFrame is empty.")
 
     scores = cross_validate(model, 
                             X_train, 
