@@ -81,12 +81,12 @@ evaluation_inputs = data/processed/X_test.csv \
 	data/processed/y_test.csv \
 	results/models/best_model.pickle
 
- $(evaluation_outputs): $(evaluation_inputs)
+$(evaluation_outputs): $(evaluation_inputs)
 	python scripts/model_evaluation.py \
-		--tuned_model_path=results/models/best_model.pickle \
-		--test_split_path=data/processed/ \
-		--test_accuracy_path=results/tables/ \
-		--figures_path=results/figures/
+        --tuned_model_path=results/models/best_model.pickle \
+        --test_split_path=data/processed/ \
+        --test_accuracy_path=results/tables/ \
+        --figures_path=results/figures/
 
 
 # Renders the report
