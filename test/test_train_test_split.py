@@ -10,10 +10,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.train_test_split import run_TrainTestSplit
 
 # Creating testing data
-os.makedirs('test/data/processed/', exist_ok=True)
+os.makedirs('test/temp/data/processed/', exist_ok=True)
 
-test_clean_data_path = 'test/data/processed/cleaned_data.csv'
-test_output_path = 'test/output/'
+test_clean_data_path = 'test/temp/data/processed/cleaned_data.csv'
+test_output_path = 'test/temp/output/'
 
 data = pd.DataFrame({
     'Col1': [1, 2, 3, 4, 2],
@@ -46,3 +46,13 @@ def test_train_test_split():
 
     # test to check if the df has a column named 'quality' to create target column
     assert y_test.columns[0]== 'quality', f"Test target column name is not 'quality'"
+
+    # remove temporary files after test
+    os.remove(f"{test_output_path}X_train.csv")
+    os.remove(f"{test_output_path}y_train.csv")
+    os.remove(f"{test_output_path}X_test.csv")
+    os.remove(f"{test_output_path}y_test.csv")
+    os.remove(f"{test_clean_data_path}")
+    os.rmdir("test/temp/data/processed")
+    os.rmdir("test/temp/data")
+    os.rmdir(test_output_path)

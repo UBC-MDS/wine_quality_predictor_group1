@@ -10,9 +10,9 @@ from src.eda_charts import run_eda_charts
 # Sample file paths for testing
 @pytest.fixture
 def setup_directories():
-    test_figures_path = "./test/test_figures"
-    test_tables_path = "./test/test_tables"
-    test_train_test_path = "./test/test_train_test"
+    test_figures_path = "test/temp/test_figures/"
+    test_tables_path = "test/temp/test_tables/"
+    test_train_test_path = "test/temp/test_train_test/"
     
     # Create directories if they do not exist
     os.makedirs(test_figures_path, exist_ok=True)
@@ -35,10 +35,10 @@ def setup_directories():
 
 # Test case for checking directory creation
 def test_directory_creation(setup_directories):
-    test_figures_path, test_tables_path, _ = setup_directories
+    test_figures_path, test_tables_path, test_train_test_path = setup_directories
 
     # Run the EDA charts function
-    run_eda_charts(test_figures_path, test_tables_path, "./test_train_test")
+    run_eda_charts(test_figures_path, test_tables_path, test_train_test_path)
     
     # Check if directories are created
     assert os.path.exists(test_figures_path), "Figures directory was not created."
@@ -46,10 +46,10 @@ def test_directory_creation(setup_directories):
 
 # Test case for checking file generation
 def test_file_generation(setup_directories):
-    test_figures_path, test_tables_path, _ = setup_directories
+    test_figures_path, test_tables_path, test_train_test_path = setup_directories
 
     # Run the EDA charts function
-    run_eda_charts(test_figures_path, test_tables_path, "./test_train_test")
+    run_eda_charts(test_figures_path, test_tables_path, test_train_test_path)
 
     # Check if files are generated
     assert os.path.exists(os.path.join(test_figures_path, "target_distribution_plot.png")), "Target distribution plot was not saved."
@@ -60,10 +60,10 @@ def test_file_generation(setup_directories):
 
 # Test case for checking content in the describe table (CSV)
 def test_describe_table_content(setup_directories):
-    _, test_tables_path, _ = setup_directories
+    test_figures_path, test_tables_path, test_train_test_path = setup_directories
 
     # Run the EDA charts function
-    run_eda_charts("./test_figures", test_tables_path, "./test_train_test")
+    run_eda_charts(test_figures_path, test_tables_path, test_train_test_path)
 
     # Check if the describe table exists
     describe_table_path = os.path.join(test_tables_path, "describe_table.csv")
@@ -76,11 +76,28 @@ def test_describe_table_content(setup_directories):
 
 # Test case for ensuring that no exceptions are raised
 def test_no_exceptions(setup_directories):
-    test_figures_path, test_tables_path, _ = setup_directories
+    test_figures_path, test_tables_path, test_train_test_path = setup_directories
 
     try:
         # Run the EDA charts function and assert no exceptions are raised
-        run_eda_charts(test_figures_path, test_tables_path, "./test_train_test")
+        run_eda_charts(test_figures_path, test_tables_path, test_train_test_path)
     except Exception as e:
         assert False, f"An exception occurred during EDA charts generation: {e}"
+
+# Cleanup after all tests
+def test_cleanup_after_tests(setup_directories):
+    test_figures_path, test_tables_path, test_train_test_path = setup_directories
+    
+    # remove temporary files after test
+    os.remove(f"{test_train_test_path}X_train.csv")
+    os.remove(f"{test_train_test_path}y_train.csv")
+    os.remove(f"{test_figures_path}target_distribution_plot.png")
+    os.remove(f"{test_figures_path}correlation_heatmap.png")
+    os.remove(f"{test_figures_path}feature_distributions.png")
+    os.remove(f"{test_figures_path}feature_pairplots.png")
+    os.remove(f"{test_tables_path}describe_table.csv")
+    os.rmdir(test_figures_path)
+    os.rmdir(test_tables_path)
+    os.rmdir(test_train_test_path)
+    
 

@@ -44,9 +44,14 @@ test_y_test_bool = True
 def test_save_confusion_matrix_multi_outputs_correct():
     result = save_confusion_matrix_multi(test_model, test_X_test, test_y_test, test_save_path)
     assert isinstance(result, np.ndarray), "save_confusion_matrix_multi should return a np.ndarray"
-    assert os.path.exists('test/temp/confusion_matrix_class_class_0.png')
-    assert os.path.exists('test/temp/confusion_matrix_class_class_1.png')
-    assert os.path.exists('test/temp/confusion_matrix_class_class_2.png')
+    assert os.path.exists(f'{test_save_path}confusion_matrix_class_class_0.png')
+    assert os.path.exists(f'{test_save_path}confusion_matrix_class_class_1.png')
+    assert os.path.exists(f'{test_save_path}confusion_matrix_class_class_2.png')
+
+    #Clean files after testing
+    os.remove(f"{test_save_path}confusion_matrix_class_class_0.png")
+    os.remove(f"{test_save_path}confusion_matrix_class_class_1.png")
+    os.remove(f"{test_save_path}confusion_matrix_class_class_2.png")
 
 # Test for correct error handling for empty X_test or y_test or save_path
 def test_save_confusion_matrix_empty_datasets_error():
@@ -61,3 +66,4 @@ def test_cross_val_scores_wrong_type_datasets_error():
         save_confusion_matrix_multi(test_model, test_X_test, test_y_test, test_save_path_numeric)
         save_confusion_matrix_multi(test_model, test_X_test_numeric, test_y_test_bool, test_save_path)
         save_confusion_matrix_multi(test_model, test_X_test_numeric, test_y_test_bool, test_save_path_bool)
+
