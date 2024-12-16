@@ -36,6 +36,8 @@ def run_TrainTestSplit(clean_data_path, train_test_path):
         If any error occurs during the loading of the CSV, train-test splitting, or file 
         saving, an exception message will be printed.
     """
+    os.makedirs(train_test_path, exist_ok=True)
+    
     try:
         # Load data
         df = pd.read_csv(clean_data_path)
@@ -45,8 +47,6 @@ def run_TrainTestSplit(clean_data_path, train_test_path):
     try:
         X = df.drop('quality', axis=1)
         y = df['quality']
-        
-        os.makedirs(train_test_path, exist_ok=True)
         
         # Train-test split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

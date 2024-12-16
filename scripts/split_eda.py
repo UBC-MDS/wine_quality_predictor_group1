@@ -20,6 +20,7 @@ def main(clean_data_path, train_test_path, figures_path, tables_path):
     The main function for reading CSV from path, performing train-test split to create our training and testing 
     and creating our EDA visualizations.
     """
+    os.makedirs(train_test_path, exist_ok=True)
     run_TrainTestSplit(clean_data_path, train_test_path)
     run_eda_charts(figures_path, tables_path, train_test_path)
 
