@@ -38,39 +38,40 @@ The final report can be found [here](https://github.com/UBC-MDS/wine_quality_pre
     - The first time you will need to pull the image which may take a few minutes to load. 
 5. Once the image loads, on your terminal click the link which starts with http://127.0.0.1, it will contain your token information for the Docker Container
     - Make sure you have no other instances of Jupyter Lab is opened on port 8888, as clicking this link will open a Jupyter Lab on this port.
-6. To run the analysis, enter the following script commands in the terminal.
-7. After closing the container, run the command `docker-compose rm` to clean up the container.
+6. To run the analysis, and generate all files necessary open a terminal within Jupyter Lab, and type the command `make all`.
+7. This will take a minute or two to run, and when completed final reports can be found within the `reports` directory.
+8. Should all generated files need to be cleared, the command `make clean` can be used.
+9. The `pytest` command can also be used within the terminal to ensure all scripts and functions run as intended.
+10. After closing the container, run the command `docker-compose rm` in the desktop terminal to clean up the container.
+
 
 
 ### Scripts
-#### 1. Download Data
+
+The following are the scripts in this project:
+
+#### 1. `download_data.py`
 This script downloads or reads data stored in a `.zip` file and saves it locally.
-```bash
-python scripts/download_data.py --url=https://archive.ics.uci.edu/static/public/186/wine+quality.zip --write_to=data/raw/
-```
+
 - `<url>`: URL from internet to download `.zip` file (E.g. https://archive.ics.uci.edu/static/public/186/wine+quality.zip).
 - `<write_to>`: Path to save the downloaded data (E.g. `data/raw`).
 
 
-#### 2. Clean Data
+#### 2. `clean_data.py`
 This script cleans the dataset by removing duplicates and handling missing values.
-```bash
-python scripts/clean_data.py --input_path=data/raw/raw_data.csv --output_path=data/processed/cleaned_data.csv --log_path=results/tables/
-```
+
 - `<input_path>`: Path to the raw data file (E.g. `data/raw/raw_data.csv`).
 - `<output_path>`: Path to save the cleaned data (E.g. `data/processed/cleaned_data.csv`).
 - `<log-path>`: Path to saves results/logs of data cleaning.
 
 
-#### 3. Data Validation
+#### 3. `data_validation_script.py`
 This script validates the data against the predefined schema.
-```bash
-python scripts/data_validation_script.py data/processed/cleaned_data.csv
-```
+
 - `<input_path>`: Path to the cleaned data (E.g. `data/processed/cleaned_data.csv`).
 
 
-#### 4. Data Splitting and Exploratory Data Analysis (EDA)
+#### 4. `split_eda.py`
 This script gets the cleaned data and applies train-test split.
 4 csv files are created in a new `train_test_path`:
  - **X_train.csv**
@@ -83,31 +84,25 @@ The EDA plots are saved as individual `.png` files. Charts should appear in the 
 * `correlation_heatmap.png`
 * `feature_distributions.png`
 * `feature_pairplots.png`
-```bash
-python scripts/split_eda.py --clean_data_path=data/processed/cleaned_data.csv --train_test_path=data/processed/ --figures_path=results/figures/ --tables_path=results/tables/
-```
 
 - `<clean_data_path>`: Path to the cleaned data (E.g. clean_data_path=data/processed/cleaned_data.csv)
 - `<train_test_path>`: Path to save the train-test splits of the data set. (E.g. data/processed/)
 - `<figures_path>`: Path to save the figures generated from EDA. (E.g. results/figures/)
 - `<tables_path>`: Path to save the tables generated from EDA. (E.g. results/tables/)
 
-#### 5. Preprocessing and Model Selection
+
+#### 5. `preprocess_model_selection.py`
 This script creates a preprocessor, and performs 5-fold cross validation on different models. 
 The scores from this cross-valiation are saved, as well as the model with the best evaluation score.
-```bash
-python scripts/preprocess_model_selection.py --train_data_path=data/processed/ --scores_path=results/tables/ --preprocessor_path=results/models/ --model_path=results/models/
-```
+
 - `<train_data_path>`: Relative path to retrieve training data.
 - `<scores_path>`: Relative path to save training and validation scores.
 - `<preprocessor_path>`: Relative path to save the preprocessor as `.pickle` file.
 - `<model_path>`: Relative path to save best performing model as `.pickle` file.
 
-#### 6. Model Tuning
+#### 6. `tuning.py`
 This script takes an SVC pipeline and tunes the model with RandomSearchCV.
-```bash
-python scripts/tuning_script.py results/models/base_model.pickle results/models/best_model.pickle data/processed/X_train.csv data/processed/y_train.csv data/processed/X_test.csv data/processed/y_test.csv results/tables/best_params.csv
-```
+
 - `<model_path>`: Path to the retrieve pre-trained model file (`.pickle`).
 - `<best_model_path>`: Path to save the fine-tuned model (`.pickle`).
 - `<X_train_path>`: Path to the training features (`.CSV`).
@@ -116,26 +111,16 @@ python scripts/tuning_script.py results/models/base_model.pickle results/models/
 - `<y_test_path>`: Path to the testing labels (`.CSV`).
 - `<params_output_path>`: Path to save the best parameters (`.CSV`).
 
-#### 7. Model Evaluation
+
+#### 7. `model.evaluation.py`
 This script finds the accuracy of the model for predictions on the testing set.
 It also creates and saves confusion matrices using the One vs Rest method of scoring.
-```bash
-python scripts/model_evaluation.py --tuned_model_path=results/models/best_model.pickle --test_split_path=data/processed/ --test_accuracy_path=results/tables/ --figures_path=results/figures/
-```
+
 - `<tuned_model_path>`: Relative path to the tuned model after hyperparameter tuning.
 - `<test_split_path>`: Relative path to testing split of the data set.
 - `<test_accuracy_path>`: Relative path to save test accuracy.
 - `<figures_path>`: Path to save any figures from evaluation.
 
-#### 8. Report Generation
-
-Finally, to generate the report in both `.html` and `.pdf` formats, do the following commands:
-
-```bash
-quarto render report/wine_predictor_analysis_report.qmd --to html
-quarto render report/wine_predictor_analysis_report.qmd --to pdf
-```
-These generated reports can be found in the `reports` folder.
 
 ## Dependencies
 Python and packages listed in `environment.yml` file. This has been used in the creation of `conda-linux-64.lock` file which is used in creation of the Docker container.
