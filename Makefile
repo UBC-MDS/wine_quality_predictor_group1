@@ -8,7 +8,7 @@ all: report/wine_predictor_analysis_report_files \
 # Downloads the data from path
 data/raw/raw_data.csv: scripts/download_data.py
 	python scripts/download_data.py \
-		--url=http://archive.ics.uci.edu/static/public/186/wine+quality.zip \
+		--url=https://archive.ics.uci.edu/static/public/186/wine+quality.zip \
 		--write_to=data/raw/ 
 
 
