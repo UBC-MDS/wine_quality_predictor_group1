@@ -8,6 +8,10 @@ import click
 import pickle
 import matplotlib.pyplot as plt
 from sklearn.metrics import multilabel_confusion_matrix, ConfusionMatrixDisplay
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from multiconfusion_matrix import save_confusion_matrix_multi
+from summarize_conf_matrix import summarize_conf_matrix
 
 @click.command()
 @click.option("--tuned_model_path", type=str, help="Path to access tuned model.")
@@ -17,7 +21,8 @@ from sklearn.metrics import multilabel_confusion_matrix, ConfusionMatrixDisplay
 def main(tuned_model_path, test_split_path, test_accuracy_path, figures_path):
     """
     Finds the accuracy of the model for predictions on the testing set.
-    Creates and saves confusion matrices using the One vs Rest method of scoring.
+    Creates and saves confusion matrices using the One vs Rest method of comparison 
+    from the multiconfusion_matrix.py function.
 
     INPUT:
     tuned_model_path: Relative path to the tuned model after hyperparameter tuning.
@@ -45,27 +50,12 @@ def main(tuned_model_path, test_split_path, test_accuracy_path, figures_path):
     test_accuracy_df.to_csv(os.path.join(test_accuracy_path, "test_accuracy.csv"), index=False)
     print(f"Saved test_accuracy.csv to {test_accuracy_path}")
 
-    # Multi-class Confusion Matrix
-    labels = np.unique(y_test)
-    
-    y_pred = best_model.predict(X_test)
-    confusion_matrix = multilabel_confusion_matrix(y_test, y_pred, labels = labels)
-    
-    # Iterate over each label's confusion matrix
-    # With reference to: sklearn.metrics.multilabel_confusion_matrix. In Scikit-learn documentation. 
-    # Retrieved November 23, 2024, from https://scikit-learn.org/dev/modules/generated/sklearn.metrics.multilabel_confusion_matrix.html
-    
-    for i in range(len(labels)):
-        matrix = ConfusionMatrixDisplay(confusion_matrix=confusion_matrix[i], 
-                                        display_labels=["Not " + str(labels[i]), labels[i]])
-        matrix.plot(cmap='Greens')
-        plt.savefig(f"{figures_path}confusion_matrix_class_{labels[i]}.png")
-        print(f"Saved confusion_matrix_class_{labels[i]}.png to {figures_path}")
+    # Generate and save multi-class confusion matrices
+    confusion_matrix = save_confusion_matrix_multi(best_model, X_test, y_test, figures_path)
  
-    # Create a DataFrame with proper column names and labels to summarize confusion matrices
-    columns = ["True Negative", "False Positive", "False Negative", "True Positive"]
-    conf_matrix_summary_df = pd.DataFrame(confusion_matrix.reshape(len(labels), -1), index=labels, columns=columns).T
-    conf_matrix_summary_df.to_csv(os.path.join(test_accuracy_path, "confusion_matrix_summary.csv"))
+    # Create a DataFrame to summarize confusion matrices
+    conf_matrix_summary = summarize_conf_matrix(confusion_matrix, np.unique(y_test))
+    conf_matrix_summary.to_csv(os.path.join(test_accuracy_path, "confusion_matrix_summary.csv"))
     print(f"Saved confusion_matrix_summary.csv to {test_accuracy_path}")
         
 if __name__ ==  "__main__":
