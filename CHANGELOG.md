@@ -68,8 +68,8 @@ https://github.com/UBC-MDS/wine_quality_predictor_group1/commit/c28ea1209072ea39
 - Added reference for $109.5 billion valuation for the red wine industry. (based on feedback from @ClaireJ2100):
 https://github.com/UBC-MDS/wine_quality_predictor_group1/commit/b689113378b3525ed66f9ca4e1bcca171c108925
 
-- Split up the EDA charts and Train test split functions to two separate files: eda_charts.py and train_test_split.py both which are located in src folder.
+- Split up the EDA charts and Train-Test split functions to two separate files: eda_charts.py and train_test_split.py both which are located in src folder  (based on feedback from @nvarabioff):
 https://github.com/UBC-MDS/wine_quality_predictor_group1/commit/cd1bccc6f275764a5e815a07867cc1f6a76ee2ba
 
-- Added insights to address issue regarding low accuracy score of 0.6 in the QMD file (based feedback provided by ZhengHe).
+- Added insights to address issue regarding low accuracy score of 0.6 in the QMD file (based feedback provided by @ZhengHe).
 https://github.com/UBC-MDS/wine_quality_predictor_group1/commit/cac9fd9be8064a17e663e164af2d72780e56449b
