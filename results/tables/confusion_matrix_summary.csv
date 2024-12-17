@@ -1,5 +1,5 @@
 ,3,4,5,6,7,8
-True Negative,271,259,112,95,239,268
-False Positive,0,0,48,66,2,0
-False Negative,1,13,29,38,31,4
-True Positive,0,0,83,73,0,0
+True Negative,270,261,114,96,236,267
+False Positive,0,0,60,51,5,0
+False Negative,2,11,23,49,26,5
+True Positive,0,0,75,76,5,0
