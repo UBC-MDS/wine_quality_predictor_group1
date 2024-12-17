@@ -3,6 +3,7 @@
 
 import click
 import sys
+import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from clean import load_data, save_overview, handle_missing_values, handle_duplicates, save_cleaned_data
 
